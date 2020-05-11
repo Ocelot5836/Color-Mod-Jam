@@ -12,7 +12,7 @@ import net.minecraftforge.registries.ForgeRegistries;
  */
 public class PainterItems
 {
-    public static final DeferredRegister<Item> REGISTRY = new DeferredRegister<>(ForgeRegistries.ITEMS, WorldPainter.MOD_ID);
+    public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, WorldPainter.MOD_ID);
 
-    public static final RegistryObject<PaintbrushItem> PAINT_BRUSH = REGISTRY.register("paintbrush", () -> new PaintbrushItem(new Item.Properties().maxStackSize(1).group(WorldPainter.TAB)));
+    public static final RegistryObject<PaintbrushItem> PAINT_BRUSH = ITEMS.register("paintbrush", () -> new PaintbrushItem(new Item.Properties().maxStackSize(1).group(WorldPainter.TAB)));
 }

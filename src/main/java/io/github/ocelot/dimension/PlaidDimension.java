@@ -48,7 +48,7 @@ public class PlaidDimension extends Dimension
         nbt.put("layers", layers);
 
         FlatGenerationSettings generationSettings = FlatGenerationSettings.createFlatGenerator(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt));
-        SingleBiomeProviderSettings settings = BiomeProviderType.FIXED.createSettings(this.world.getWorldInfo()).setBiome(PainterDimensions.PAINTED_BIOME.get());
+        SingleBiomeProviderSettings settings = BiomeProviderType.FIXED.createSettings(this.world.getWorldInfo()).setBiome(generationSettings.getBiome());
         return ChunkGeneratorType.FLAT.create(this.world, BiomeProviderType.FIXED.create(settings), generationSettings);
     }
 

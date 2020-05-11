@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "": { "model": "worldpainter:block/paint_bucket" }
+    }
+}

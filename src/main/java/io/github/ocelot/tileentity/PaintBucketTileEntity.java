@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 
@@ -40,6 +41,12 @@ public class PaintBucketTileEntity extends TileEntity
         return color;
     }
 
+    public void setColor(int color)
+    {
+        this.color = color;
+        this.markDirty();
+    }
+
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt)
     {
@@ -58,4 +65,5 @@ public class PaintBucketTileEntity extends TileEntity
     {
         return this.write(new CompoundNBT());
     }
+
 }

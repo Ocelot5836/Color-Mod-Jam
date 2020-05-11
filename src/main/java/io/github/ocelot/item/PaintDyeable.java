@@ -11,7 +11,7 @@ import net.minecraftforge.common.util.Constants;
  */
 public interface PaintDyeable
 {
-    int MAX_PAINT = 16;
+    int MAX_PAINT = 64;
 
     /**
      * Checks whether or not the specified stack has any color.
@@ -62,26 +62,4 @@ public interface PaintDyeable
         stack.getOrCreateChildTag("display").putInt("color", color);
     }
 
-    /**
-     * Fetches the amount of paint from the specified stack.
-     *
-     * @param stack The stack to query
-     * @return The amount of paint left in the stack
-     */
-    default int getPaint(ItemStack stack)
-    {
-        CompoundNBT compoundnbt = stack.getTag();
-        return compoundnbt != null && compoundnbt.contains("paint", Constants.NBT.TAG_ANY_NUMERIC) ? compoundnbt.getInt("paint") : 0;
-    }
-
-    /**
-     * Sets the amount of paint for the specified stack.
-     *
-     * @param stack The stack to set the paint amount for
-     * @param paint The new amount of paint for the stack
-     */
-    default void setPaint(ItemStack stack, int paint)
-    {
-        stack.getOrCreateTag().putInt("paint", paint);
-    }
 }

@@ -3,6 +3,7 @@ package io.github.ocelot.init;
 import io.github.ocelot.WorldPainter;
 import io.github.ocelot.dimension.PaintedLeavesColor;
 import io.github.ocelot.item.PaintDyeable;
+import io.github.ocelot.tileentity.PaintBucketTileEntity;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -23,6 +24,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Objects;
+
 /**
  * @author Ocelot
  */
@@ -36,6 +39,7 @@ public class ClientRegistry
     public static void init(IEventBus bus)
     {
         RenderTypeLookup.setRenderLayer(PainterBlocks.PAINTED_LEAVES.get(), RenderType.getCutoutMipped());
+        RenderTypeLookup.setRenderLayer(PainterBlocks.PAINT_BUCKET.get(), RenderType.getCutoutMipped());
         MinecraftForge.EVENT_BUS.register(ClientRegistry.class);
     }
 
@@ -64,6 +68,7 @@ public class ClientRegistry
     {
         BlockColors blockColors = event.getBlockColors();
         blockColors.register((state, world, pos, layer) -> world != null && pos != null ? world.getBlockColor(pos, PAINTED_LEAVES_RESOLVER) : -1, PainterBlocks.PAINTED_LEAVES.get());
+        blockColors.register((state, world, pos, layer) -> world != null && pos != null && world.getTileEntity(pos) instanceof PaintBucketTileEntity ? ((PaintBucketTileEntity) Objects.requireNonNull(world.getTileEntity(pos))).getColor() : -1, PainterBlocks.PAINT_BUCKET.get());
     }
 
     @OnlyIn(Dist.CLIENT)

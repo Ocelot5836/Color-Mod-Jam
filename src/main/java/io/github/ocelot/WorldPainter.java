@@ -4,7 +4,7 @@ import io.github.ocelot.init.ClientRegistry;
 import io.github.ocelot.init.PainterBlocks;
 import io.github.ocelot.init.PainterDimensions;
 import io.github.ocelot.init.PainterItems;
-import io.github.ocelot.item.PaintbrushItem;
+import io.github.ocelot.item.PaintDyeable;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.DimensionManager;
@@ -35,7 +35,8 @@ public class WorldPainter
         public ItemStack createIcon()
         {
             ItemStack stack = new ItemStack(PainterItems.PAINT_BRUSH.get());
-            PaintbrushItem.setColor(stack, 0xFF00FF);
+            PainterItems.PAINT_BRUSH.get().setColor(stack, 0xFF00FF);
+            PainterItems.PAINT_BRUSH.get().setPaint(stack, PaintDyeable.MAX_PAINT);
             return stack;
         }
     };
@@ -46,7 +47,8 @@ public class WorldPainter
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::initClient);
         PainterBlocks.BLOCKS.register(bus);
-        PainterItems.REGISTRY.register(bus);
+        PainterBlocks.TILE_ENTTIES.register(bus);
+        PainterItems.ITEMS.register(bus);
         PainterDimensions.DIMENSIONS.register(bus);
         PainterDimensions.BIOMES.register(bus);
         MinecraftForge.EVENT_BUS.register(this);
