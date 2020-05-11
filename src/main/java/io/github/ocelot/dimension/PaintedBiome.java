@@ -33,11 +33,11 @@ public class PaintedBiome extends Biome
     @Override
     public int getGrassColor(double posX, double posZ)
     {
-        return 0xFF00FF;
+        return (((int) Math.abs(posX * 8)) & 0xff) << 16 | ((int) Math.abs(posZ * 8)) & 0xff;
     }
 
     public int getFoliageColor(double posX, double posZ)
     {
-        return 0xFFFF00FF;
+        return getGrassColor(posX, posZ);
     }
 }

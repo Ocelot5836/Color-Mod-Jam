@@ -45,7 +45,7 @@ public class PaintedDimension extends Dimension
             for (int i = 0; i < 2; i++)
             {
                 CompoundNBT layer = new CompoundNBT();
-                layer.putString("block", String.valueOf((i == 0 ? Blocks.DIRT : Blocks.GRASS).getRegistryName()));
+                layer.putString("block", String.valueOf((i == 0 ? Blocks.DIRT : Blocks.GRASS_BLOCK).getRegistryName()));
                 layer.putByte("height", (byte) 1);
                 layers.add(layer);
             }
