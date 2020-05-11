@@ -1,0 +1,22 @@
+{
+	"forge_marker": 1,
+	"variants": {
+		"facing": {
+			"north": {
+				"model": "worldpainter:block/jungle_easel",
+				"y": 180
+			},
+			"east": {
+				"model": "worldpainter:block/jungle_easel",
+				"y": 270
+			},
+			"south": {
+				"model": "worldpainter:block/jungle_easel"
+			},
+			"west": {
+				"model": "worldpainter:block/jungle_easel",
+				"y": 90
+			}
+		}
+	}
+}

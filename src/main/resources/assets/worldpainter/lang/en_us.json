@@ -7,8 +7,12 @@
 
 	"item.worldpainter.paintbrush": "Paint Brush",
 
-	"block.worldpainter.painted_grass_block": "Painted Grass Block",
-	"block.worldpainter.painted_grass": "Painted Grass",
-	"block.worldpainter.painted_fern": "Painted Fern",
-	"block.worldpainter.painted_leaves": "Painted Leaves"
+	"block.worldpainter.painted_leaves": "Painted Leaves",
+	"block.worldpainter.paint_bucket": "Paint Bucket",
+	"block.worldpainter.oak_easel": "Oak Easel",
+	"block.worldpainter.birch_easel": "Birch Easel",
+	"block.worldpainter.spruce_easel": "Spruce Easel",
+	"block.worldpainter.jungle_easel": "Jungle Easel",
+	"block.worldpainter.acacia_easel": "Acacia Easel",
+	"block.worldpainter.dark_oak_easel": "Dark Oak Easel"
 }

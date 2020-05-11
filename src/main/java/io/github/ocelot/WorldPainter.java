@@ -5,7 +5,6 @@ import io.github.ocelot.init.PainterBlocks;
 import io.github.ocelot.init.PainterDimensions;
 import io.github.ocelot.init.PainterItems;
 import io.github.ocelot.item.PaintbrushItem;
-import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.DimensionManager;
@@ -46,7 +45,7 @@ public class WorldPainter
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::initClient);
-        PainterBlocks.REGISTRY.register(bus);
+        PainterBlocks.BLOCKS.register(bus);
         PainterItems.REGISTRY.register(bus);
         PainterDimensions.DIMENSIONS.register(bus);
         PainterDimensions.BIOMES.register(bus);
@@ -65,7 +64,7 @@ public class WorldPainter
     @SubscribeEvent
     public void onEvent(RegisterDimensionsEvent event)
     {
-        if (event.getMissingNames().contains(PainterDimensions.PAINTED_DIMENSION.getId()))
-            DimensionManager.registerDimension(PainterDimensions.PAINTED_DIMENSION.getId(), PainterDimensions.PAINTED_DIMENSION.get(), null, true);
+        DimensionManager.registerOrGetDimension(PainterDimensions.PAINTED_DIMENSION.getId(), PainterDimensions.PAINTED_DIMENSION.get(), null, true);
+        DimensionManager.registerOrGetDimension(PainterDimensions.PLAID_DIMENSION.getId(), PainterDimensions.PLAID_DIMENSION.get(), null, true);
     }
 }

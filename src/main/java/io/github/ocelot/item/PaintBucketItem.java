@@ -1,21 +1,20 @@
 package io.github.ocelot.item;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.common.util.Constants;
 
 /**
  * @author Ocelot
  */
-public class PaintbrushItem extends Item implements PaintDyeable
+public class PaintBucketItem extends BlockItem implements PaintDyeable
 {
-    public PaintbrushItem(Properties properties)
+    public PaintBucketItem(Block block, Properties builder)
     {
-        super(properties);
+        super(block, builder);
     }
 
     @Override

@@ -24,9 +24,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class PaintedDimension extends Dimension
+public class PlaidDimension extends Dimension
 {
-    public PaintedDimension(World world, DimensionType dimensionType)
+    public PlaidDimension(World world, DimensionType dimensionType)
     {
         super(world, dimensionType, 0.0f);
     }
@@ -36,7 +36,7 @@ public class PaintedDimension extends Dimension
     {
         CompoundNBT nbt = new CompoundNBT();
 
-        nbt.putString("biome", String.valueOf(PainterDimensions.PAINTED_BIOME.getId()));
+        nbt.putString("biome", String.valueOf(PainterDimensions.PLAID_BIOME.getId()));
 
         ListNBT layers = new ListNBT();
         {
@@ -46,11 +46,6 @@ public class PaintedDimension extends Dimension
             layers.add(layer);
         }
         nbt.put("layers", layers);
-
-        // Adds void platform TODO remove
-//        CompoundNBT structures = new CompoundNBT();
-//        structures.put("decoration", new CompoundNBT());
-//        nbt.put("structures", structures);
 
         FlatGenerationSettings generationSettings = FlatGenerationSettings.createFlatGenerator(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt));
         SingleBiomeProviderSettings settings = BiomeProviderType.FIXED.createSettings(this.world.getWorldInfo()).setBiome(PainterDimensions.PAINTED_BIOME.get());

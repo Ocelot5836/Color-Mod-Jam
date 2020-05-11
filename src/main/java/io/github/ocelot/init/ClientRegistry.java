@@ -1,8 +1,8 @@
 package io.github.ocelot.init;
 
 import io.github.ocelot.WorldPainter;
-import io.github.ocelot.dimension.PaintedBiome;
-import io.github.ocelot.item.PaintbrushItem;
+import io.github.ocelot.dimension.PaintedLeavesColor;
+import io.github.ocelot.item.PaintDyeable;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ColorCache;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.item.Item;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -20,6 +21,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  * @author Ocelot
@@ -28,7 +30,7 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = WorldPainter.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientRegistry
 {
-    public static final ColorResolver PAINTED_LEAVES_RESOLVER = (biome, posX, posZ) -> biome instanceof PaintedBiome ? ((PaintedBiome) biome).getFoliageColor(posX, posZ) : -1;
+    public static final ColorResolver PAINTED_LEAVES_RESOLVER = (biome, posX, posZ) -> biome instanceof PaintedLeavesColor ? ((PaintedLeavesColor) biome).getFoliageColor(posX, posZ) : -1;
 
     @OnlyIn(Dist.CLIENT)
     public static void init(IEventBus bus)
@@ -70,6 +72,8 @@ public class ClientRegistry
     {
         BlockColors blockColors = event.getBlockColors();
         ItemColors itemColors = event.getItemColors();
-        itemColors.register((stack, layer) -> layer == 0 ? -1 : PaintbrushItem.getColor(stack), PainterItems.PAINT_BRUSH.get());
+
+        Item[] paintDyeables = ForgeRegistries.ITEMS.getValues().stream().filter(item -> item instanceof PaintDyeable).toArray(Item[]::new);
+        itemColors.register((stack, layer) -> layer == 0 ? -1 : ((PaintDyeable) stack.getItem()).getColor(stack), paintDyeables);
     }
 }
