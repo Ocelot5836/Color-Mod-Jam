@@ -7,5 +7,8 @@
 
 	"item.worldpainter.paintbrush": "Paint Brush",
 
+	"block.worldpainter.painted_grass_block": "Painted Grass Block",
+	"block.worldpainter.painted_grass": "Painted Grass",
+	"block.worldpainter.painted_fern": "Painted Fern",
 	"block.worldpainter.painted_leaves": "Painted Leaves"
 }

@@ -4,14 +4,12 @@ import io.github.ocelot.WorldPainter;
 import io.github.ocelot.dimension.PaintedBiome;
 import io.github.ocelot.item.PaintbrushItem;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.GameSettings;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ColorCache;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.item.BlockItem;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -35,6 +33,7 @@ public class ClientRegistry
     @OnlyIn(Dist.CLIENT)
     public static void init(IEventBus bus)
     {
+        RenderTypeLookup.setRenderLayer(PainterBlocks.PAINTED_LEAVES.get(), RenderType.getCutoutMipped());
         MinecraftForge.EVENT_BUS.register(ClientRegistry.class);
     }
 
@@ -62,19 +61,7 @@ public class ClientRegistry
     public static void onEvent(ColorHandlerEvent.Block event)
     {
         BlockColors blockColors = event.getBlockColors();
-        blockColors.register((state, world, pos, layer) ->
-        {
-            if (world != null && pos != null)
-            {
-                GameSettings settings = Minecraft.getInstance().gameSettings;
-                int biomeBlend = settings.biomeBlendRadius;
-                settings.biomeBlendRadius = 0;
-                int color = world.getBlockColor(pos, PAINTED_LEAVES_RESOLVER);
-                settings.biomeBlendRadius = biomeBlend;
-                return color;
-            }
-            return -1;
-        }, PainterBlocks.PAINTED_LEAVES.get());
+        blockColors.register((state, world, pos, layer) -> world != null && pos != null ? world.getBlockColor(pos, PAINTED_LEAVES_RESOLVER) : -1, PainterBlocks.PAINTED_LEAVES.get());
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -84,12 +71,5 @@ public class ClientRegistry
         BlockColors blockColors = event.getBlockColors();
         ItemColors itemColors = event.getItemColors();
         itemColors.register((stack, layer) -> layer == 0 ? -1 : PaintbrushItem.getColor(stack), PainterItems.PAINT_BRUSH.get());
-        itemColors.register((stack, layer) ->
-        {
-            if (!(stack.getItem() instanceof BlockItem))
-                return -1;
-            BlockState blockstate = ((BlockItem) stack.getItem()).getBlock().getDefaultState();
-            return blockColors.getColor(blockstate, null, null, layer);
-        }, PainterBlocks.PAINTED_LEAVES.get());
     }
 }

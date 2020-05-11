@@ -36,7 +36,7 @@ public class WorldPainter
         public ItemStack createIcon()
         {
             ItemStack stack = new ItemStack(PainterItems.PAINT_BRUSH.get());
-            PaintbrushItem.setColor(stack, DyeColor.WHITE.getColorValue());
+            PaintbrushItem.setColor(stack, 0xFF00FF);
             return stack;
         }
     };

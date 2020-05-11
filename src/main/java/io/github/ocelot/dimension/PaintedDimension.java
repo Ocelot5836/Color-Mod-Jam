@@ -34,31 +34,26 @@ public class PaintedDimension extends Dimension
     @Override
     public ChunkGenerator<?> createChunkGenerator()
     {
-        //{biome:"minecraft:the_void",layers:[{block:"minecraft:air",height:1b}],structures:{decoration:{}}}
-
         CompoundNBT nbt = new CompoundNBT();
 
         nbt.putString("biome", String.valueOf(PainterDimensions.PAINTED_BIOME.getId()));
 
         ListNBT layers = new ListNBT();
         {
-            for (int i = 0; i < 2; i++)
-            {
-                CompoundNBT layer = new CompoundNBT();
-                layer.putString("block", String.valueOf((i == 0 ? Blocks.DIRT : Blocks.GRASS_BLOCK).getRegistryName()));
-                layer.putByte("height", (byte) 1);
-                layers.add(layer);
-            }
+            CompoundNBT layer = new CompoundNBT();
+            layer.putString("block", String.valueOf(Blocks.GRASS_BLOCK.getRegistryName()));
+            layer.putByte("height", (byte) 1);
+            layers.add(layer);
         }
         nbt.put("layers", layers);
 
         // Adds void platform TODO remove
-        CompoundNBT structures = new CompoundNBT();
-        structures.put("decoration", new CompoundNBT());
-        nbt.put("structures", structures);
+//        CompoundNBT structures = new CompoundNBT();
+//        structures.put("decoration", new CompoundNBT());
+//        nbt.put("structures", structures);
 
         FlatGenerationSettings generationSettings = FlatGenerationSettings.createFlatGenerator(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt));
-        SingleBiomeProviderSettings settings = BiomeProviderType.FIXED.createSettings(this.world.getWorldInfo()).setBiome(generationSettings.getBiome());
+        SingleBiomeProviderSettings settings = BiomeProviderType.FIXED.createSettings(this.world.getWorldInfo()).setBiome(PainterDimensions.PAINTED_BIOME.get());
         return ChunkGeneratorType.FLAT.create(this.world, BiomeProviderType.FIXED.create(settings), generationSettings);
     }
 
