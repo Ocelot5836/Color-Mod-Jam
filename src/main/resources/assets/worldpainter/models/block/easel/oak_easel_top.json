@@ -1,0 +1,7 @@
+{
+    "parent": "worldpainter:block/easel/template_easel_top",
+	"textures": {
+		"log": "block/oak_log",
+		"logTop": "block/oak_log_top"
+	}
+}

@@ -13,6 +13,20 @@ import java.util.UUID;
 public class Painting
 {
     public static final int SIZE = 32;
+    public static final Painting PLAD_PAINTING;
+
+    static
+    {
+        int[] pixels = new int[SIZE * SIZE];
+        for (int y = 0; y < SIZE; y++)
+        {
+            for (int x = 0; x < SIZE; x++)
+            {
+                pixels[x + y * SIZE] = 0;
+            }
+        }
+        PLAD_PAINTING = new Painting(pixels, UUID.fromString("56208243-31d3-4438-a9d1-20b10bda1314"));
+    }
 
     private final UUID id;
     private final int[] pixels;
@@ -123,6 +137,7 @@ public class Painting
     public CompoundNBT serializeNBT()
     {
         CompoundNBT nbt = new CompoundNBT();
+        nbt.putUniqueId("id", this.id);
         nbt.putIntArray("pixels", this.pixels);
         return nbt;
     }

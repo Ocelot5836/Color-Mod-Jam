@@ -1,3 +1,8 @@
 {
-	"parent": "worldpainter:block/acacia_easel"
+	"parent": "worldpainter:item/template_easel",
+	"textures": {
+		"log": "block/acacia_log",
+		"logTop": "block/acacia_log",
+		"planks": "block/acacia_planks"
+	}
 }

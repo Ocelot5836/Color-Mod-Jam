@@ -3,7 +3,7 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"0": "worldpainter:block/paint_bucket",
-		"particle": "block/anvil"
+		"particle": "block/iron_block"
 	},
 	"display": {
 		"gui": {

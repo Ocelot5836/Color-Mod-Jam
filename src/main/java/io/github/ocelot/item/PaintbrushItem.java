@@ -1,10 +1,10 @@
 package io.github.ocelot.item;
 
-import io.github.ocelot.init.PainterBlocks;
 import io.github.ocelot.tileentity.PaintBucketTileEntity;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.NonNullList;
@@ -60,17 +60,9 @@ public class PaintbrushItem extends Item implements PaintDyeable
     {
         if (this.isInGroup(group))
         {
-            ItemStack emptyStack = new ItemStack(this);
-            this.setPaint(emptyStack, MAX_PAINT);
-            items.add(emptyStack);
-
-            for (DyeColor color : DyeColor.values())
-            {
-                ItemStack stack = new ItemStack(this);
-                this.setColor(stack, color.getColorValue());
-                this.setPaint(stack, MAX_PAINT);
-                items.add(stack);
-            }
+            ItemStack stack = new ItemStack(this);
+            this.setPaint(stack, MAX_PAINT);
+            items.add(stack);
         }
     }
     /**

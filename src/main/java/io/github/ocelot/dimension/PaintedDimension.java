@@ -2,6 +2,7 @@ package io.github.ocelot.dimension;
 
 import com.mojang.datafixers.Dynamic;
 import io.github.ocelot.init.PainterDimensions;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -31,6 +32,14 @@ public class PaintedDimension extends Dimension
         super(world, dimensionType, 0.0f);
     }
 
+    private void addLayer(ListNBT layers, Block block, int height)
+    {
+        CompoundNBT layer = new CompoundNBT();
+        layer.putString("block", String.valueOf(block.getRegistryName()));
+        layer.putByte("height", (byte) height);
+        layers.add(layer);
+    }
+
     @Override
     public ChunkGenerator<?> createChunkGenerator()
     {
@@ -40,10 +49,10 @@ public class PaintedDimension extends Dimension
 
         ListNBT layers = new ListNBT();
         {
-            CompoundNBT layer = new CompoundNBT();
-            layer.putString("block", String.valueOf(Blocks.GRASS_BLOCK.getRegistryName()));
-            layer.putByte("height", (byte) 1);
-            layers.add(layer);
+            this.addLayer(layers, Blocks.BEDROCK, 1);
+            this.addLayer(layers, Blocks.STONE, 54);
+            this.addLayer(layers, Blocks.DIRT, 7);
+            this.addLayer(layers, Blocks.GRASS_BLOCK, 1);
         }
         nbt.put("layers", layers);
 

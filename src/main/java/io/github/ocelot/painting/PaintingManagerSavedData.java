@@ -1,11 +1,16 @@
 package io.github.ocelot.painting;
 
+import io.github.ocelot.init.PainterMessages;
+import io.github.ocelot.network.AddPaintingMessage;
+import io.github.ocelot.network.RemovePaintingMessage;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -26,30 +31,40 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
     @Override
     public void addPainting(Painting painting) throws IllegalStateException
     {
+        if (Painting.PLAD_PAINTING.getId().equals(painting.getId()))
+            return;
         if (this.paintings.containsKey(painting.getId()))
             throw new IllegalStateException("Painting with id '" + painting.getId() + "' already exists.");
         this.paintings.put(painting.getId(), painting);
-// TODO notify clients
+        PainterMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new AddPaintingMessage(painting));
     }
 
     @Override
     public void removePainting(UUID id)
     {
+        if (Painting.PLAD_PAINTING.getId().equals(id))
+            return;
         this.paintings.remove(id);
-// TODO notify clients
+        PainterMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new RemovePaintingMessage(id));
     }
 
     @Override
     public boolean hasPainting(UUID id)
     {
-        return this.paintings.containsKey(id);
+        return Painting.PLAD_PAINTING.getId().equals(id) || this.paintings.containsKey(id);
     }
 
     @Nullable
     @Override
     public Painting getPainting(UUID id)
     {
-        return this.paintings.get(id);
+        return Painting.PLAD_PAINTING.getId().equals(id) ? Painting.PLAD_PAINTING : this.paintings.get(id);
+    }
+
+    @Override
+    public Collection<Painting> getAllPaintings()
+    {
+        return this.paintings.values();
     }
 
     @Override

@@ -2,9 +2,11 @@ package io.github.ocelot.painting;
 
 import io.github.ocelot.WorldPainter;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.UUID;
 
 /**
@@ -35,6 +37,17 @@ public interface PaintingManager
     void removePainting(UUID id);
 
     /**
+     * Checks to see if the painting exists.
+     *
+     * @param painting The painting to check
+     * @return Whether or not that painting has been created
+     */
+    default boolean hasPainting(@Nullable Painting painting)
+    {
+        return painting != null && this.hasPainting(painting.getId());
+    }
+
+    /**
      * Checks to see if the painting with the specified id exists.
      *
      * @param id The id to check
@@ -52,6 +65,11 @@ public interface PaintingManager
     Painting getPainting(UUID id);
 
     /**
+     * @return A collection of every painting stored
+     */
+    Collection<Painting> getAllPaintings();
+
+    /**
      * Checks the world for the painting manager for the world side.
      *
      * @param world The world to get the painting manager from
@@ -63,6 +81,6 @@ public interface PaintingManager
             return ClientPaintingManager.INSTANCE;
         if (!(world instanceof ServerWorld))
             throw new IllegalStateException("Server side world is not an instance of ServerWorld?");
-        return (((ServerWorld) world).getSavedData()).getOrCreate(PaintingManagerSavedData::new, DATA_NAME);
+        return (((ServerWorld) world).getServer().getWorld(DimensionType.OVERWORLD).getSavedData()).getOrCreate(PaintingManagerSavedData::new, DATA_NAME);
     }
 }

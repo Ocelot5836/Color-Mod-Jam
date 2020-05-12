@@ -1,0 +1,6 @@
+{
+    "parent": "worldpainter:block/easel/template_easel_bottom",
+	"textures": {
+		"planks": "block/jungle_planks"
+	}
+}

@@ -1,3 +1,8 @@
 {
-	"parent": "worldpainter:block/jungle_easel"
+	"parent": "worldpainter:item/template_easel",
+	"textures": {
+		"log": "block/jungle_log",
+		"logTop": "block/jungle_log",
+		"planks": "block/jungle_planks"
+	}
 }

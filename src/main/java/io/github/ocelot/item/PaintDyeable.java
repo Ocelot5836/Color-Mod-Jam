@@ -1,5 +1,6 @@
 package io.github.ocelot.item;
 
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.Constants;
@@ -34,7 +35,7 @@ public interface PaintDyeable
     default int getColor(ItemStack stack)
     {
         CompoundNBT compoundnbt = stack.getChildTag("display");
-        return compoundnbt != null && compoundnbt.contains("color", Constants.NBT.TAG_ANY_NUMERIC) ? compoundnbt.getInt("color") : 0xFFFFFF;
+        return compoundnbt != null && compoundnbt.contains("color", Constants.NBT.TAG_ANY_NUMERIC) ? compoundnbt.getInt("color") : DyeColor.WHITE.getColorValue();
     }
 
     /**

@@ -45,9 +45,25 @@ public class ClientPaintingManager implements PaintingManager
         return this.paintings.get(id);
     }
 
+    @Override
+    public Collection<Painting> getAllPaintings()
+    {
+        return this.paintings.values();
+    }
+
     public void receivePaintings(Collection<Painting> paintings)
     {
         this.paintings.clear();
         paintings.forEach(painting -> this.paintings.put(painting.getId(), painting));
+    }
+
+    public void receiveAddPainting(Painting painting)
+    {
+        this.paintings.put(painting.getId(), painting);
+    }
+
+    public void receiveRemovePainting(UUID id)
+    {
+        this.paintings.remove(id);
     }
 }

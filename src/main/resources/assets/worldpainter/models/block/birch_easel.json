@@ -1,7 +1,0 @@
-{
-    "parent": "worldpainter:block/easel",
-	"textures": {
-		"log": "block/birch_log",
-		"planks": "block/birch_planks"
-	}
-}

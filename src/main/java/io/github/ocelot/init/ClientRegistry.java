@@ -2,6 +2,7 @@ package io.github.ocelot.init;
 
 import io.github.ocelot.WorldPainter;
 import io.github.ocelot.dimension.PaintedLeavesColor;
+import io.github.ocelot.entity.render.WorldPaintingEntityRenderer;
 import io.github.ocelot.item.PaintDyeable;
 import io.github.ocelot.tileentity.PaintBucketTileEntity;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -20,6 +21,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -38,6 +40,8 @@ public class ClientRegistry
     @OnlyIn(Dist.CLIENT)
     public static void init(IEventBus bus)
     {
+        RenderingRegistry.registerEntityRenderingHandler(PainterEntities.WORLD_PAINTING.get(), WorldPaintingEntityRenderer::new);
+
         RenderTypeLookup.setRenderLayer(PainterBlocks.PAINTED_LEAVES.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(PainterBlocks.PAINT_BUCKET.get(), RenderType.getCutoutMipped());
         MinecraftForge.EVENT_BUS.register(ClientRegistry.class);

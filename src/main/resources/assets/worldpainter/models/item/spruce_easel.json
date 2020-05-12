@@ -1,3 +1,8 @@
 {
-	"parent": "worldpainter:block/spruce_easel"
+	"parent": "worldpainter:item/template_easel",
+	"textures": {
+		"log": "block/spruce_log",
+		"logTop": "block/spruce_log",
+		"planks": "block/spruce_planks"
+	}
 }

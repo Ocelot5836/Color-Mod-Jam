@@ -1,3 +1,8 @@
 {
-	"parent": "worldpainter:block/dark_oak_easel"
+	"parent": "worldpainter:item/template_easel",
+	"textures": {
+		"log": "block/dark_oak_log",
+		"logTop": "block/dark_oak_log",
+		"planks": "block/dark_oak_planks"
+	}
 }
