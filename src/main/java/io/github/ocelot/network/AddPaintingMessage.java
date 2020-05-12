@@ -3,6 +3,8 @@ package io.github.ocelot.network;
 import io.github.ocelot.painting.Painting;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class AddPaintingMessage
 {
@@ -26,6 +28,7 @@ public class AddPaintingMessage
         return new AddPaintingMessage(new Painting(nbt));
     }
 
+    @OnlyIn(Dist.CLIENT)
     public Painting getPainting()
     {
         return painting;

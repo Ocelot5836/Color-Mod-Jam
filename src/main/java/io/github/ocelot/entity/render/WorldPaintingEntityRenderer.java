@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL30;
 
 /**
  * @author Ocelot
@@ -18,9 +19,9 @@ public class WorldPaintingEntityRenderer extends EntityRenderer<WorldPaintingEnt
     }
 
     @Override
-    public void render(WorldPaintingEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLightIn)
+    public void render(WorldPaintingEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLight)
     {
-        super.render(entity, entityYaw, partialTicks, matrixStack, buffer, packedLightIn);
+        super.render(entity, entityYaw, partialTicks, matrixStack, buffer, packedLight);
     }
 
     @Override

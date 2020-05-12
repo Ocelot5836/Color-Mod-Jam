@@ -36,7 +36,7 @@ public class EaselTileEntity extends TileEntity implements PaintingHolder
     public void read(CompoundNBT nbt)
     {
         super.read(nbt);
-        this.paintingId = this.deserializePainting(nbt.getCompound("paintingId"));
+        this.paintingId = this.deserializePainting(nbt);
     }
 
     @Nullable
@@ -51,7 +51,7 @@ public class EaselTileEntity extends TileEntity implements PaintingHolder
         if (this.world != null)
         {
             PaintingManager paintingManager = PaintingManager.get(this.world);
-            if (paintingManager.hasPainting(painting))
+            if (!paintingManager.hasPainting(painting))
                 paintingManager.addPainting(painting);
             this.paintingId = painting == null ? null : painting.getId();
             this.markDirty();

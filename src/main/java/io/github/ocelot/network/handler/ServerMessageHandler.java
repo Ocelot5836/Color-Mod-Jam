@@ -2,6 +2,7 @@ package io.github.ocelot.network.handler;
 
 import io.github.ocelot.network.AddPaintingMessage;
 import io.github.ocelot.network.RemovePaintingMessage;
+import io.github.ocelot.network.SpawnWorldPaintingMessage;
 import io.github.ocelot.network.SyncPaintingsMessage;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -16,6 +17,12 @@ public class ServerMessageHandler implements MessageHandler
 
     private ServerMessageHandler()
     {
+    }
+
+    @Override
+    public void handleSpawnWorldPaintingMessage(SpawnWorldPaintingMessage msg, Supplier<NetworkEvent.Context> ctx)
+    {
+        throw new UnsupportedOperationException("Server cannot be told to spawn world painting.");
     }
 
     @Override

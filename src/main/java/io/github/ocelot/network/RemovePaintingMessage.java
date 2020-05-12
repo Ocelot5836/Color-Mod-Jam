@@ -1,6 +1,8 @@
 package io.github.ocelot.network;
 
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.UUID;
 
@@ -23,6 +25,7 @@ public class RemovePaintingMessage
         return new RemovePaintingMessage(buf.readUniqueId());
     }
 
+    @OnlyIn(Dist.CLIENT)
     public UUID getId()
     {
         return id;

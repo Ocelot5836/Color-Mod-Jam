@@ -1,6 +1,9 @@
 package io.github.ocelot.init;
 
 import io.github.ocelot.WorldPainter;
+import io.github.ocelot.network.AddPaintingMessage;
+import io.github.ocelot.network.RemovePaintingMessage;
+import io.github.ocelot.network.SpawnWorldPaintingMessage;
 import io.github.ocelot.network.SyncPaintingsMessage;
 import io.github.ocelot.network.handler.ClientMessageHandler;
 import io.github.ocelot.network.handler.MessageHandler;
@@ -24,7 +27,10 @@ public class PainterMessages
 
     public static void init()
     {
+        registerMessage(SpawnWorldPaintingMessage.class, SpawnWorldPaintingMessage::encode, SpawnWorldPaintingMessage::decode, (msg, ctx) -> getHandler(ctx).handleSpawnWorldPaintingMessage(msg, ctx));
         registerMessage(SyncPaintingsMessage.class, SyncPaintingsMessage::encode, SyncPaintingsMessage::decode, (msg, ctx) -> getHandler(ctx).handleSyncPaintingsMessage(msg, ctx));
+        registerMessage(AddPaintingMessage.class, AddPaintingMessage::encode, AddPaintingMessage::decode, (msg, ctx) -> getHandler(ctx).handleAddPaintingMessage(msg, ctx));
+        registerMessage(RemovePaintingMessage.class, RemovePaintingMessage::encode, RemovePaintingMessage::decode, (msg, ctx) -> getHandler(ctx).handleRemovePaintingMessage(msg, ctx));
     }
 
     private static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer)

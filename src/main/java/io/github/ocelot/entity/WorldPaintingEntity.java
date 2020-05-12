@@ -2,6 +2,8 @@ package io.github.ocelot.entity;
 
 import io.github.ocelot.init.PainterEntities;
 import io.github.ocelot.init.PainterItems;
+import io.github.ocelot.init.PainterMessages;
+import io.github.ocelot.network.SpawnWorldPaintingMessage;
 import io.github.ocelot.painting.Painting;
 import io.github.ocelot.painting.PaintingHolder;
 import io.github.ocelot.painting.PaintingManager;
@@ -12,16 +14,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fml.network.NetworkDirection;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -29,7 +30,7 @@ import java.util.UUID;
 /**
  * @author Ocelot
  */
-public class WorldPaintingEntity extends HangingEntity implements PaintingHolder, IEntityAdditionalSpawnData
+public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
 {
     private UUID paintingId;
 
@@ -38,16 +39,25 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
         super(entityType, world);
     }
 
-    @SuppressWarnings("unused")
-    public WorldPaintingEntity(World world, BlockPos pos)
-    {
-        super(PainterEntities.WORLD_PAINTING.get(), world, pos);
-    }
-
     public WorldPaintingEntity(World world, BlockPos pos, Direction facing)
     {
         super(PainterEntities.WORLD_PAINTING.get(), world, pos);
         this.updateFacingWithBoundingBox(facing);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public WorldPaintingEntity(World world, BlockPos pos, Direction facing, @Nullable UUID paintingId)
+    {
+        this(world, pos, facing);
+        this.paintingId = paintingId;
+    }
+
+    private ItemStack getStack()
+    {
+        ItemStack stack = new ItemStack(PainterItems.WORLD_PAINTING.get());
+        if (this.paintingId != null)
+            PainterItems.WORLD_PAINTING.get().setPainting(stack, this.paintingId);
+        return stack;
     }
 
     @Override
@@ -61,7 +71,7 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
     public void readAdditional(CompoundNBT nbt)
     {
         super.readAdditional(nbt);
-        this.paintingId = this.deserializePainting(nbt.getCompound("paintingId"));
+        this.paintingId = this.deserializePainting(nbt);
     }
 
     @Override
@@ -70,7 +80,7 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
         if (this.world != null)
         {
             PaintingManager paintingManager = PaintingManager.get(this.world);
-            if (paintingManager.hasPainting(painting))
+            if (!paintingManager.hasPainting(painting))
                 paintingManager.addPainting(painting);
             this.paintingId = painting == null ? null : painting.getId();
         }
@@ -86,13 +96,19 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
     @Override
     public int getWidthPixels()
     {
-        return 64;
+        return Painting.SIZE;
     }
 
     @Override
     public int getHeightPixels()
     {
-        return 64;
+        return Painting.SIZE;
+    }
+
+    @Override
+    public ItemStack getPickedResult(RayTraceResult target)
+    {
+        return this.getStack();
     }
 
     @Override
@@ -110,10 +126,7 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
                 }
             }
 
-            ItemStack stack = new ItemStack(PainterItems.WORLD_PAINTING.get());
-            if (this.paintingId != null)
-                PainterItems.WORLD_PAINTING.get().setPainting(stack, this.paintingId);
-            this.entityDropItem(stack);
+            this.entityDropItem(this.getStack());
         }
     }
 
@@ -140,20 +153,6 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
     @Override
     public IPacket<?> createSpawnPacket()
     {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
-    @Override
-    public void writeSpawnData(PacketBuffer buffer)
-    {
-        buffer.writeBlockPos(this.hangingPosition);
-        buffer.writeByte(this.facingDirection.getHorizontalIndex());
-    }
-
-    @Override
-    public void readSpawnData(PacketBuffer buffer)
-    {
-        this.hangingPosition = buffer.readBlockPos();
-        this.facingDirection = Direction.byHorizontalIndex(buffer.readByte());
+        return PainterMessages.INSTANCE.toVanillaPacket(new SpawnWorldPaintingMessage(this), NetworkDirection.PLAY_TO_CLIENT);
     }
 }
