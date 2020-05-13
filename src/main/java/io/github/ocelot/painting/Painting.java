@@ -22,16 +22,17 @@ public class Painting
         {
             for (int x = 0; x < SIZE; x++)
             {
-                pixels[x + y * SIZE] = 0;
+                pixels[x + y * SIZE] = (Math.abs(x * 128) & 0xff) << 16 | Math.abs(y * 128) & 0xff;
             }
         }
-        PLAD_PAINTING = new Painting(pixels, UUID.fromString("56208243-31d3-4438-a9d1-20b10bda1314"));
+        PLAD_PAINTING = new Painting(pixels, UUID.fromString("56208243-31d3-4438-a9d1-20b10bda1314"), true);
     }
 
-    private final UUID id;
     private final int[] pixels;
+    private final UUID id;
+    private boolean hasBorder;
 
-    private Painting(int[] pixels, UUID id)
+    private Painting(int[] pixels, UUID id, boolean hasBorder)
     {
         if (validateSize(pixels))
         {
@@ -44,13 +45,15 @@ public class Painting
             Arrays.fill(this.pixels, 0xFFFFFF);
         }
         this.id = id;
+        this.hasBorder = hasBorder;
     }
 
     public Painting()
     {
-        this.id = UUID.randomUUID();
         this.pixels = new int[SIZE * SIZE];
         Arrays.fill(this.pixels, 0xFFFFFF);
+        this.id = UUID.randomUUID();
+        this.hasBorder = false;
     }
 
     public Painting(CompoundNBT nbt)
@@ -67,6 +70,7 @@ public class Painting
             Arrays.fill(this.pixels, 0xFFFFFF);
         }
         this.id = nbt.hasUniqueId("id") ? nbt.getUniqueId("id") : UUID.randomUUID();
+        this.hasBorder = nbt.getBoolean("hasBorder");
     }
 
     /**
@@ -110,6 +114,14 @@ public class Painting
     }
 
     /**
+     * @return Whether or not a border should overlay on this painting
+     */
+    public boolean hasBorder()
+    {
+        return hasBorder;
+    }
+
+    /**
      * Checks the image for the pixel at the specified position or <code>0xFFFFFF</code> if the position is out of bounds.
      *
      * @param x The x position to fetch
@@ -130,6 +142,16 @@ public class Painting
     }
 
     /**
+     * Sets whether or not this painting shows a border.
+     *
+     * @param hasBorder Whether or not a border should render
+     */
+    public void setHasBorder(boolean hasBorder)
+    {
+        this.hasBorder = hasBorder;
+    }
+
+    /**
      * Serializes the image into a compound tag.
      *
      * @return The tag full of data
@@ -137,8 +159,9 @@ public class Painting
     public CompoundNBT serializeNBT()
     {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.putUniqueId("id", this.id);
         nbt.putIntArray("pixels", this.pixels);
+        nbt.putUniqueId("id", this.id);
+        nbt.putBoolean("hasBorder", this.hasBorder);
         return nbt;
     }
 

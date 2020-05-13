@@ -35,14 +35,14 @@ public class ClientPaintingManager implements PaintingManager
     @Override
     public boolean hasPainting(UUID id)
     {
-        return this.paintings.containsKey(id);
+        return Painting.PLAD_PAINTING.getId().equals(id) || this.paintings.containsKey(id);
     }
 
     @Nullable
     @Override
     public Painting getPainting(UUID id)
     {
-        return this.paintings.get(id);
+        return Painting.PLAD_PAINTING.getId().equals(id) ? Painting.PLAD_PAINTING : this.paintings.get(id);
     }
 
     @Override

@@ -25,6 +25,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 import java.util.Random;
 
+/**
+ * @author Ocelot
+ */
 public class PlaidDimension extends Dimension
 {
     public PlaidDimension(World world, DimensionType dimensionType)
@@ -32,7 +35,8 @@ public class PlaidDimension extends Dimension
         super(world, dimensionType, 0.0f);
     }
 
-    private void addLayer(ListNBT layers, Block block, int height){
+    private void addLayer(ListNBT layers, Block block, int height)
+    {
         CompoundNBT layer = new CompoundNBT();
         layer.putString("block", String.valueOf(block.getRegistryName()));
         layer.putByte("height", (byte) height);

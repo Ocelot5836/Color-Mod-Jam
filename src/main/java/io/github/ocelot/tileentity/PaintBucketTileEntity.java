@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 
@@ -33,6 +34,8 @@ public class PaintBucketTileEntity extends TileEntity
     {
         super.read(nbt);
         this.color = nbt.getInt("color");
+        if (this.world != null)
+            this.world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT);
     }
 
     public int getColor()

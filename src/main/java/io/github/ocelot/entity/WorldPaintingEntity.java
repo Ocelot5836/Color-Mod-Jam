@@ -50,6 +50,7 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
     {
         this(world, pos, facing);
         this.paintingId = paintingId;
+        this.updateFacingWithBoundingBox(facing);
     }
 
     private ItemStack getStack()
@@ -146,8 +147,8 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
     @OnlyIn(Dist.CLIENT)
     public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
     {
-        BlockPos blockpos = this.hangingPosition.add(x - this.getPosX(), y - this.getPosY(), z - this.getPosZ());
-        this.setPosition(blockpos.getX(), blockpos.getY(), blockpos.getZ());
+//        BlockPos blockpos = this.hangingPosition.add(x - this.getPosX(), y - this.getPosY(), z - this.getPosZ());
+//        this.setPosition(blockpos.getX(), blockpos.getY(), blockpos.getZ());
     }
 
     @Override

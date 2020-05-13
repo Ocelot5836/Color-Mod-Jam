@@ -92,7 +92,7 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack)
     {
-        world.setBlockState(pos.up(), this.getDefaultState().with(HORIZONTAL_FACING, world.getBlockState(pos).get(HORIZONTAL_FACING)).with(HALF, DoubleBlockHalf.UPPER).with(WATERLOGGED, world.getFluidState(pos).getFluid() == Fluids.WATER), 3);
+        world.setBlockState(pos.up(), this.getDefaultState().with(HORIZONTAL_FACING, world.getBlockState(pos).get(HORIZONTAL_FACING)).with(HALF, DoubleBlockHalf.UPPER).with(WATERLOGGED, world.getFluidState(pos.up()).getFluid() == Fluids.WATER), 3);
     }
 
     @Override
@@ -125,16 +125,16 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
         BlockState blockstate = world.getBlockState(blockpos);
         if (blockstate.getBlock() == this && blockstate.get(HALF) != doubleblockhalf)
         {
-            world.setBlockState(blockpos, world.getFluidState(blockpos).getBlockState(), 35);
-            world.playEvent(player, 2001, blockpos, Block.getStateId(blockstate));
+            world.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 35);
+            world.playEvent(player, 2001, blockpos.up(), Block.getStateId(blockstate));
             if (!world.isRemote() && !player.isCreative())
             {
-                spawnDrops(state, world, pos, null, player, player.getHeldItemMainhand());
-                spawnDrops(blockstate, world, blockpos, null, player, player.getHeldItemMainhand());
+                spawnDrops(state, world, doubleblockhalf == DoubleBlockHalf.UPPER ? pos.down() : pos, null, player, player.getHeldItemMainhand());
             }
         }
 
-        super.onBlockHarvested(world, pos, state, player);
+//        Huh?
+//        super.onBlockHarvested(world, pos, state, player);
     }
 
     @Override
