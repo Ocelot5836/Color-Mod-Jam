@@ -1,10 +1,8 @@
 package io.github.ocelot.item;
 
 import io.github.ocelot.entity.WorldPaintingEntity;
-import io.github.ocelot.init.PainterEntities;
 import io.github.ocelot.painting.Painting;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.HangingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.HangingEntityItem;
 import net.minecraft.item.ItemGroup;
@@ -53,7 +51,7 @@ public class WorldPaintingItem extends HangingEntityItem
         else
         {
             World world = context.getWorld();
-            HangingEntity hangingentity = new WorldPaintingEntity(world, blockpos1, direction);
+            WorldPaintingEntity hangingentity = new WorldPaintingEntity(world, blockpos1, direction);
 
             CompoundNBT compoundnbt = itemstack.getTag();
             if (compoundnbt != null)

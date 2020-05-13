@@ -1,5 +1,6 @@
 package io.github.ocelot.entity;
 
+import io.github.ocelot.init.PainterDimensions;
 import io.github.ocelot.init.PainterEntities;
 import io.github.ocelot.init.PainterItems;
 import io.github.ocelot.init.PainterMessages;
@@ -20,6 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -128,6 +130,29 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
             }
 
             this.entityDropItem(this.getStack());
+        }
+    }
+
+    @Override
+    public void onCollideWithPlayer(PlayerEntity player)
+    {
+        if (!this.world.isRemote() && this.paintingId != null && PaintingManager.get(this.world).hasPainting(this.paintingId))
+        {
+            if (this.world.getDimension().getType() == DimensionType.OVERWORLD)
+            {
+                if (Painting.PLAD_PAINTING.getId().equals(this.paintingId))
+                {
+                    player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()), new PladTeleporter());
+                    return;
+                }
+            }
+            else if (this.world.getDimension().getType() == PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()))
+            {
+                if (Painting.PLAD_PAINTING.getId().equals(this.paintingId))
+                {
+                    player.changeDimension(DimensionType.OVERWORLD, new PladTeleporter());
+                }
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package io.github.ocelot.painting;
 
 import io.github.ocelot.WorldPainter;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
@@ -70,6 +71,17 @@ public interface PaintingManager
     Collection<Painting> getAllPaintings();
 
     /**
+     * Calculates the starting position of the specified dimension.
+     *
+     * @param dimension The dimension to get
+     * @return The position the specified dimension starts
+     */
+    static BlockPos getDimensionPos(int dimension)
+    {
+        return new BlockPos(dimension * 500, 63, 0);
+    }
+
+    /**
      * Checks the world for the painting manager for the world side.
      *
      * @param world The world to get the painting manager from
@@ -81,6 +93,8 @@ public interface PaintingManager
             return ClientPaintingManager.INSTANCE;
         if (!(world instanceof ServerWorld))
             throw new IllegalStateException("Server side world is not an instance of ServerWorld?");
-        return (((ServerWorld) world).getServer().getWorld(DimensionType.OVERWORLD).getSavedData()).getOrCreate(PaintingManagerSavedData::new, DATA_NAME);
+        PaintingManagerSavedData data = (((ServerWorld) world).getServer().getWorld(DimensionType.OVERWORLD).getSavedData()).getOrCreate(PaintingManagerSavedData::new, DATA_NAME);
+        data.setWorld((ServerWorld) world);
+        return data;
     }
 }

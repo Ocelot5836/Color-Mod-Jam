@@ -31,6 +31,7 @@ public class Painting
     private final int[] pixels;
     private final UUID id;
     private boolean hasBorder;
+    private int index;
 
     private Painting(int[] pixels, UUID id, boolean hasBorder)
     {
@@ -46,6 +47,7 @@ public class Painting
         }
         this.id = id;
         this.hasBorder = hasBorder;
+        this.index = -1;
     }
 
     public Painting()
@@ -54,6 +56,7 @@ public class Painting
         Arrays.fill(this.pixels, 0xFFFFFF);
         this.id = UUID.randomUUID();
         this.hasBorder = false;
+        this.index = -1;
     }
 
     public Painting(CompoundNBT nbt)
@@ -71,6 +74,7 @@ public class Painting
         }
         this.id = nbt.hasUniqueId("id") ? nbt.getUniqueId("id") : UUID.randomUUID();
         this.hasBorder = nbt.getBoolean("hasBorder");
+        this.index = nbt.getInt("index");
     }
 
     /**
@@ -106,22 +110,6 @@ public class Painting
     }
 
     /**
-     * @return The id of this painting
-     */
-    public UUID getId()
-    {
-        return id;
-    }
-
-    /**
-     * @return Whether or not a border should overlay on this painting
-     */
-    public boolean hasBorder()
-    {
-        return hasBorder;
-    }
-
-    /**
      * Checks the image for the pixel at the specified position or <code>0xFFFFFF</code> if the position is out of bounds.
      *
      * @param x The x position to fetch
@@ -142,6 +130,38 @@ public class Painting
     }
 
     /**
+     * @return The id of this painting
+     */
+    public UUID getId()
+    {
+        return id;
+    }
+
+    /**
+     * @return Whether or not a border should overlay on this painting
+     */
+    public boolean hasBorder()
+    {
+        return hasBorder;
+    }
+
+    /**
+     * @return Whether or not a dimension has been generated for this painting
+     */
+    public boolean hasDimension()
+    {
+        return this.index != -1;
+    }
+
+    /**
+     * @return The dimension index of this painting
+     */
+    public int getIndex()
+    {
+        return index;
+    }
+
+    /**
      * Sets whether or not this painting shows a border.
      *
      * @param hasBorder Whether or not a border should render
@@ -149,6 +169,16 @@ public class Painting
     public void setHasBorder(boolean hasBorder)
     {
         this.hasBorder = hasBorder;
+    }
+
+    /**
+     * Sets the dimension of this painting.
+     *
+     * @param index The new dimension index
+     */
+    public void setIndex(int index)
+    {
+        this.index = index;
     }
 
     /**
@@ -162,6 +192,7 @@ public class Painting
         nbt.putIntArray("pixels", this.pixels);
         nbt.putUniqueId("id", this.id);
         nbt.putBoolean("hasBorder", this.hasBorder);
+        nbt.putInt("index", this.index);
         return nbt;
     }
 
