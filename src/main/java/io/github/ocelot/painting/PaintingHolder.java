@@ -70,7 +70,7 @@ public interface PaintingHolder
     /**
      * Sets the painting of this holder to the specified value.
      *
-     * @param painting The new painting value
+     * @param paintingId The new painting id value
      */
-    void setPainting(@Nullable Painting painting);
+    void setPainting(@Nullable UUID paintingId);
 }

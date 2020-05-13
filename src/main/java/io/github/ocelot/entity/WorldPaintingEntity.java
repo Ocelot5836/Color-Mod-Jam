@@ -78,15 +78,9 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
     }
 
     @Override
-    public void setPainting(@Nullable Painting painting)
+    public void setPainting(@Nullable UUID paintingId)
     {
-        if (this.world != null)
-        {
-            PaintingManager paintingManager = PaintingManager.get(this.world);
-            if (!paintingManager.hasPainting(painting))
-                paintingManager.addPainting(painting);
-            this.paintingId = painting == null ? null : painting.getId();
-        }
+        this.paintingId = paintingId;
     }
 
     @Nullable

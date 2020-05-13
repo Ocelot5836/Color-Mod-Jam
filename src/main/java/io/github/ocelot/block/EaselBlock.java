@@ -9,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItemUseContext;
@@ -32,6 +33,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author Ocelot
@@ -55,8 +57,40 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
         if (world.getTileEntity(easelPos) instanceof EaselTileEntity)
         {
             EaselTileEntity te = (EaselTileEntity) Objects.requireNonNull(world.getTileEntity(easelPos));
-            if (player.getHeldItem(hand).getItem() == PainterItems.PAINT_BRUSH.get())
+            ItemStack stack = player.getHeldItem(hand);
+            if (te.getPaintingId() != null)
+            {
+                if (stack.getItem() == PainterItems.PAINT_BRUSH.get())
+                {
+                    if (!world.isRemote())
+                    {
+
+                    }
+                    return ActionResultType.SUCCESS;
+                }
+                else
+                {
+                    if (!world.isRemote())
+                    {
+                        UUID paintingId = te.getPaintingId();
+                        te.setPainting(null);
+                        ItemStack teStack = new ItemStack(PainterItems.WORLD_PAINTING.get());
+                        PainterItems.WORLD_PAINTING.get().setPainting(teStack, paintingId);
+                        world.addEntity(new ItemEntity(world, pos.getX() + 0.5 + state.get(HORIZONTAL_FACING).getXOffset() / 1.9, pos.getY() + 0.5 + (state.get(HALF) == DoubleBlockHalf.LOWER ? 1 : 0), pos.getZ() + 0.5 + state.get(HORIZONTAL_FACING).getZOffset() / 1.9, teStack));
+                    }
+                    return ActionResultType.SUCCESS;
+                }
+            }
+            else if (stack.getItem() == PainterItems.WORLD_PAINTING.get())
+            {
+                if (!world.isRemote())
+                {
+                    UUID paintingId = PainterItems.WORLD_PAINTING.get().getPaintingId(stack);
+                    te.setPainting(paintingId != null ? paintingId : UUID.randomUUID());
+                    stack.shrink(1);
+                }
                 return ActionResultType.SUCCESS;
+            }
         }
         return ActionResultType.PASS;
     }

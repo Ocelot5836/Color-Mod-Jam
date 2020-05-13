@@ -6,6 +6,7 @@
 	"itemGroup.worldpainter": "World Painter",
 
 	"item.worldpainter.paintbrush": "Paint Brush",
+	"item.worldpainter.world_painting": "Teleportation Painting",
 
 	"block.worldpainter.painted_leaves": "Painted Leaves",
 	"block.worldpainter.paint_bucket": "Paint Bucket",

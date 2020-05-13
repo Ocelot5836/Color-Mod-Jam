@@ -66,7 +66,7 @@ public class WorldPainter
 
     private void initClient(FMLClientSetupEvent event)
     {
-        ClientRegistry.init(FMLJavaModLoadingContext.get().getModEventBus());
+        PainterClientRegistry.init(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
     @SubscribeEvent

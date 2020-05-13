@@ -5,6 +5,7 @@ import io.github.ocelot.dimension.PaintedLeavesColor;
 import io.github.ocelot.entity.render.WorldPaintingEntityRenderer;
 import io.github.ocelot.item.PaintDyeable;
 import io.github.ocelot.tileentity.PaintBucketTileEntity;
+import io.github.ocelot.tileentity.renderer.EaselTileEntityRenderer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -21,6 +22,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -33,18 +35,19 @@ import java.util.Objects;
  */
 @SuppressWarnings("unused")
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = WorldPainter.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class ClientRegistry
+public class PainterClientRegistry
 {
     public static final ColorResolver PAINTED_LEAVES_RESOLVER = (biome, posX, posZ) -> biome instanceof PaintedLeavesColor ? ((PaintedLeavesColor) biome).getFoliageColor(posX, posZ) : -1;
 
     @OnlyIn(Dist.CLIENT)
     public static void init(IEventBus bus)
     {
+        ClientRegistry.bindTileEntityRenderer(PainterBlocks.EASEL_TE.get(), EaselTileEntityRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(PainterEntities.WORLD_PAINTING.get(), WorldPaintingEntityRenderer::new);
 
         RenderTypeLookup.setRenderLayer(PainterBlocks.PAINTED_LEAVES.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(PainterBlocks.PAINT_BUCKET.get(), RenderType.getCutout());
-        MinecraftForge.EVENT_BUS.register(ClientRegistry.class);
+        MinecraftForge.EVENT_BUS.register(PainterClientRegistry.class);
     }
 
     @SuppressWarnings("unchecked")
