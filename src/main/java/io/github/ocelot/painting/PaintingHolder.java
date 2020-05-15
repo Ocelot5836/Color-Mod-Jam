@@ -68,6 +68,14 @@ public interface PaintingHolder
     UUID getPaintingId();
 
     /**
+     * @return Whether or not a painting is present
+     */
+    default boolean hasPainting()
+    {
+        return this.getPaintingId() != null;
+    }
+
+    /**
      * Sets the painting of this holder to the specified value.
      *
      * @param paintingId The new painting id value

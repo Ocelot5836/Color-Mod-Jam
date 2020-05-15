@@ -1,7 +1,9 @@
 package io.github.ocelot.tileentity;
 
 import io.github.ocelot.init.PainterBlocks;
+import io.github.ocelot.painting.Painting;
 import io.github.ocelot.painting.PaintingHolder;
+import io.github.ocelot.painting.PaintingManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -47,6 +49,16 @@ public class EaselTileEntity extends TileEntity implements PaintingHolder
         return paintingId;
     }
 
+    public void addNewPainting()
+    {
+        if (this.world != null)
+        {
+            Painting painting = new Painting();
+            PaintingManager.get(this.world).addPainting(painting);
+            this.setPainting(painting.getId());
+        }
+    }
+
     @Override
     public void setPainting(@Nullable UUID paintingId)
     {
@@ -74,5 +86,4 @@ public class EaselTileEntity extends TileEntity implements PaintingHolder
     {
         return this.write(new CompoundNBT());
     }
-
 }

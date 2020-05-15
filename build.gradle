@@ -101,16 +101,8 @@ configurations {
 repositories {
     mavenCentral()
     maven {
-        name = "CurseForge"
-        url = "https://minecraft.curseforge.com/api/maven"
-    }
-    maven {
         name = "JitPack"
         url = "https://jitpack.io"
-    }
-    maven {
-        name = "Minecraft"
-        url = "https://libraries.minecraft.net"
     }
 }
 
@@ -120,9 +112,9 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${project.minecraft}-${project.forge}"
 
-    def fishLib = "com.github.Ocelot5836:FishLib:${project.minecraft}-${project.fishLib}"
-    implementation fg.deobf(fishLib)
-    shade fishLib
+    compileOnly fg.deobf("com.github.Ocelot5836:FishLib:${project.minecraft}-${project.fishLib}:api")
+    runtimeOnly fg.deobf("com.github.Ocelot5836:FishLib:${project.minecraft}-${project.fishLib}")
+    shade "com.github.Ocelot5836:FishLib:${project.minecraft}-${project.fishLib}"
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

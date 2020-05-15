@@ -38,14 +38,14 @@ public class WorldPaintingRenderer
      * @param painting      The painting to draw or null for a blank image
      * @param combinedLight The combined light of the painting
      */
-    public static void renderPainting(double posX, double posY, double posZ, Direction direction, MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, int combinedLight)
+    public static void renderPainting(double posX, double posY, double posZ, Direction direction, MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, boolean renderBorder, int combinedLight)
     {
         PaintingSpriteUploader paintingspriteuploader = Minecraft.getInstance().getPaintingSpriteUploader();
         TextureAtlasSprite backSprite = paintingspriteuploader.getBackSprite();
-        renderBackground(posX, posY, posZ, direction, stack, buffer, painting, backSprite, combinedLight);
+        renderBackground(posX, posY, posZ, direction, stack, buffer, painting, renderBorder, backSprite, combinedLight);
     }
 
-    private static void renderBackground(double posX, double posY, double posZ, Direction direction, MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, TextureAtlasSprite backSprite, int combinedLight)
+    private static void renderBackground(double posX, double posY, double posZ, Direction direction, MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, boolean renderBorder, TextureAtlasSprite backSprite, int combinedLight)
     {
         MatrixStack.Entry last = stack.getLast();
         Matrix4f matrix4f = last.getMatrix();
@@ -127,7 +127,7 @@ public class WorldPaintingRenderer
                 renderFront(matrix4f, matrix3f, frontBuilder, f15, f16, f17, f18, i, j, d0, d1, k, l, combinedLight);
                 Minecraft.getInstance().getRenderTypeBuffers().getBufferSource().finish(RenderType.getEntitySolid(WorldPaintingTextureCache.getTexture(painting)));
 
-                if (painting == null || painting.hasBorder())
+                if (renderBorder && (painting == null || painting.hasBorder()))
                 {
                     IVertexBuilder borderBuilder = buffer.getBuffer(RenderType.getEntityTranslucentCull(WorldPaintingTextureCache.BORDER));
                     renderFront(matrix4f, matrix3f, borderBuilder, f15, f16, f17, f18, i, j, d0, d1, k, l, combinedLight);

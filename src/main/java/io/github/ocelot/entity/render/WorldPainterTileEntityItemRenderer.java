@@ -27,7 +27,7 @@ public class WorldPainterTileEntityItemRenderer extends ItemStackTileEntityRende
         Painting painting = null;
         if (Minecraft.getInstance().world != null && stack.getItem() instanceof WorldPaintingItem)
             painting = PaintingManager.get(Minecraft.getInstance().world).getPainting(((WorldPaintingItem) stack.getItem()).getPaintingId(stack));
-        WorldPaintingRenderer.renderPainting(0, 0, 0, Direction.SOUTH, matrixStack, buffer, painting, combinedLight);
+        WorldPaintingRenderer.renderPainting(0, 0, 0, Direction.SOUTH, matrixStack, buffer, painting, true, combinedLight);
         matrixStack.pop();
     }
 }

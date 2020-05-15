@@ -26,9 +26,8 @@ public interface PaintingManager
      * Adds the specified painting to the cache.
      *
      * @param painting The painting to add
-     * @throws IllegalStateException If another painting with the same id exists
      */
-    void addPainting(Painting painting) throws IllegalStateException;
+    void addPainting(Painting painting);
 
     /**
      * Removes the painting with the specified id.

@@ -29,7 +29,7 @@ public class Painting
     }
 
     private final int[] pixels;
-    private final UUID id;
+    private UUID id;
     private boolean hasBorder;
     private int index;
 
@@ -107,6 +107,15 @@ public class Painting
         if (!checkBounds(x, y))
             return;
         this.pixels[x + y * SIZE] = color;
+    }
+
+    /**
+     * Randomizes the id of this painting.
+     */
+    public void shuffleId()
+    {
+        if (this != PLAD_PAINTING)
+            this.id = UUID.randomUUID();
     }
 
     /**

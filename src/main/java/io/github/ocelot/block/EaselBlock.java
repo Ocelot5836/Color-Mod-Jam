@@ -3,6 +3,7 @@ package io.github.ocelot.block;
 import io.github.ocelot.common.BaseBlock;
 import io.github.ocelot.common.VoxelShapeHelper;
 import io.github.ocelot.init.PainterItems;
+import io.github.ocelot.painting.Painting;
 import io.github.ocelot.tileentity.EaselTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -24,12 +26,14 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -42,12 +46,30 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
 {
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
 
-    private static final VoxelShape[] SHAPES = getShapes();
+    private static final VoxelShape[] SHAPES = getShapes(false);
+    private static final VoxelShape[] FULL_SHAPES = getShapes(true);
 
     public EaselBlock(Properties properties)
     {
         super(properties);
         this.setDefaultState(this.stateContainer.getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(HALF, DoubleBlockHalf.LOWER).with(WATERLOGGED, false));
+    }
+
+    private Vec3d raytrace(Vec3d planePoint, Vec3d planeNormal, Vec3d start, Vec3d end)
+    {
+        Vec3d u = end.subtract(start);
+        Vec3d w = start.subtract(planePoint);
+
+        double d = planeNormal.dotProduct(u);
+        double n = -planeNormal.dotProduct(w);
+
+        if (Math.abs(d) < 1.0E-7D)
+            return null;
+
+        double si = n / d;
+        if (si < 0 || si > 1)
+            return null;
+        return start.add(u.mul(si, si, si));
     }
 
     @Override
@@ -64,7 +86,28 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
                 {
                     if (!world.isRemote())
                     {
+                        Direction facing = state.get(HORIZONTAL_FACING);
+                        Vec3d lookVec = player.getLookVec();
+                        double reach = player.getAttribute(PlayerEntity.REACH_DISTANCE).getValue();
+                        Vec3d start = player.getEyePosition(0);
+                        Vec3d end = start.add(lookVec.mul(reach, reach, reach));
 
+                        Vec3d result = raytrace(new Vec3d(pos.add(facing == Direction.SOUTH || facing == Direction.WEST ? 0 : 1, 0, facing == Direction.SOUTH || facing == Direction.WEST ? 1 : 0)).subtract(facing.getXOffset() * 0.425, 0, facing.getZOffset() * 0.425), new Vec3d(facing.getXOffset(), 0.45, facing.getZOffset()), start, end);
+
+                        // 0, 0, 0.5
+
+                        // 0, 14, 15.6
+
+                        if (result != null)
+                        {
+                            Vec3d normalResult = result.subtract(pos.getX(), pos.getY(), pos.getZ());
+                            if(normalResult.getX() >= 0 && normalResult.getX() < 1 && normalResult.getY() >= 0 && normalResult.getY() < 1)
+                            {
+                                int pixelX = (int) Math.round(normalResult.getX() * Painting.SIZE);
+                                int pixelY = (int) Math.round((1.0 - normalResult.getY()) * Painting.SIZE);
+                            System.out.println(pixelX + ", " + pixelY);
+                            ((ServerWorld) world).spawnParticle(ParticleTypes.MYCELIUM, result.getX(), result.getY(), result.getZ(), 100, 0, 0, 0, 0);}
+                        }
                     }
                     return ActionResultType.SUCCESS;
                 }
@@ -86,7 +129,14 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
                 if (!world.isRemote())
                 {
                     UUID paintingId = PainterItems.WORLD_PAINTING.get().getPaintingId(stack);
-                    te.setPainting(paintingId != null ? paintingId : UUID.randomUUID());
+                    if (paintingId == null)
+                    {
+                        te.addNewPainting();
+                    }
+                    else
+                    {
+                        te.setPainting(paintingId);
+                    }
                     stack.shrink(1);
                 }
                 return ActionResultType.SUCCESS;
@@ -98,7 +148,11 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context)
     {
-        return SHAPES[state.get(HORIZONTAL_FACING).getHorizontalIndex() + (state.get(HALF) == DoubleBlockHalf.UPPER ? 4 : 0)];
+        boolean full = false;
+        BlockPos easelPos = state.get(HALF) == DoubleBlockHalf.LOWER ? pos : pos.down();
+        if (world.getTileEntity(easelPos) instanceof EaselTileEntity)
+            full = Objects.requireNonNull((EaselTileEntity) world.getTileEntity(easelPos)).hasPainting();
+        return (full ? FULL_SHAPES : SHAPES)[state.get(HORIZONTAL_FACING).getHorizontalIndex() + (state.get(HALF) == DoubleBlockHalf.UPPER ? 4 : 0)];
     }
 
     @Override
@@ -190,11 +244,11 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
         builder.add(HORIZONTAL_FACING, HALF, WATERLOGGED);
     }
 
-    private static VoxelShape[] getShapes()
+    private static VoxelShape[] getShapes(boolean full)
     {
         VoxelShape[] shapes = new VoxelShape[8];
-        VoxelShapeHelper.Builder bottom = new VoxelShapeHelper.Builder().append(Block.makeCuboidShape(0, 0, 0, 16, 28, 10));
-        VoxelShapeHelper.Builder top = new VoxelShapeHelper.Builder().append(Block.makeCuboidShape(0, -16, 0, 16, 12, 10));
+        VoxelShapeHelper.Builder bottom = new VoxelShapeHelper.Builder().append(Block.makeCuboidShape(0, 0, 0, 16, full ? 32 : 28, 10));
+        VoxelShapeHelper.Builder top = new VoxelShapeHelper.Builder().append(Block.makeCuboidShape(0, -16, 0, 16, full ? 16 : 12, 10));
         for (int i = 0; i < 2; i++)
         {
             for (Direction facing : Direction.values())
@@ -207,4 +261,17 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
         }
         return shapes;
     }
+
+//    private static VoxelShape[] getPaintingShapes()
+//    {
+//        VoxelShape[] shapes = new VoxelShape[4];
+//        VoxelShapeHelper.Builder partBuilder = new VoxelShapeHelper.Builder().append(Block.makeCuboidShape(0, 0.5, 7.75, 16, 2, 8.25));
+//        for (Direction facing : Direction.values())
+//        {
+//            if (facing.getHorizontalIndex() == -1)
+//                continue;
+//            shapes[facing.getHorizontalIndex()] = partBuilder.rotate(facing).build();
+//        }
+//        return shapes;
+//    }
 }

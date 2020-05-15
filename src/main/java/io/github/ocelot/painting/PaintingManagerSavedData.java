@@ -66,7 +66,7 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
         if (Painting.PLAD_PAINTING.getId().equals(painting.getId()))
             return;
         if (this.paintings.containsKey(painting.getId()))
-            throw new IllegalStateException("Painting with id '" + painting.getId() + "' already exists.");
+            painting.shuffleId();
         this.paintings.put(painting.getId(), painting);
         this.markDirty();
         PainterMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new AddPaintingMessage(painting));
