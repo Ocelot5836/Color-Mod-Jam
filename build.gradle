@@ -120,7 +120,7 @@ dependencies {
     runtimeOnly fg.deobf("com.github.Ocelot5836:FishLib:${project.minecraft}-${project.fishLib}")
     shade "com.github.Ocelot5836:FishLib:${project.minecraft}-${project.fishLib}"
 
-//    runtimeOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-${project.minecraft}-${project.curios}")
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-${project.minecraft}-${project.curios}")
     compileOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-${project.minecraft}-${project.curios}:api")
 }
 
