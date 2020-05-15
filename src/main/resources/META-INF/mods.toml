@@ -48,3 +48,9 @@ description="Adds in paintable, customizable dimensions."
     versionRange="[1.15.2]"
     ordering="NONE"
     side="BOTH"
+[[dependencies.worldpainter]]
+    modId="curios"
+    mandatory=false
+    versionRange="[2.0.2.0,)"
+    ordering="BEFORE"
+    side="BOTH"

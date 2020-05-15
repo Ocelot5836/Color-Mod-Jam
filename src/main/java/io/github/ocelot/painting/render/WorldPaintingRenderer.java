@@ -11,10 +11,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.PaintingSpriteUploader;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
@@ -27,25 +27,21 @@ import javax.annotation.Nullable;
 public class WorldPaintingRenderer
 {
     /**
-     * Renders the specified painting at the specified position.
+     * Renders the specified world painting.
      *
-     * @param posX          The x position to render tha painting at
-     * @param posY          The y position to render tha painting at
-     * @param posZ          The z position to render tha painting at
-     * @param direction     The direction the painting is facing
      * @param stack         The matrix stack
      * @param buffer        The render buffers
      * @param painting      The painting to draw or null for a blank image
      * @param combinedLight The combined light of the painting
      */
-    public static void renderPainting(double posX, double posY, double posZ, Direction direction, MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, boolean renderBorder, int combinedLight)
+    public static void renderPainting(MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, boolean renderBorder, int combinedLight)
     {
         PaintingSpriteUploader paintingspriteuploader = Minecraft.getInstance().getPaintingSpriteUploader();
         TextureAtlasSprite backSprite = paintingspriteuploader.getBackSprite();
-        renderBackground(posX, posY, posZ, direction, stack, buffer, painting, renderBorder, backSprite, combinedLight);
+        renderBackground(stack, buffer, painting, renderBorder, backSprite, combinedLight);
     }
 
-    private static void renderBackground(double posX, double posY, double posZ, Direction direction, MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, boolean renderBorder, TextureAtlasSprite backSprite, int combinedLight)
+    private static void renderBackground(MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, boolean renderBorder, TextureAtlasSprite backSprite, int combinedLight)
     {
         MatrixStack.Entry last = stack.getLast();
         Matrix4f matrix4f = last.getMatrix();
@@ -77,28 +73,6 @@ public class WorldPaintingRenderer
                 float f16 = f + (float) (k * 16);
                 float f17 = f1 + (float) ((l + 1) * 16);
                 float f18 = f1 + (float) (l * 16);
-                int i1 = MathHelper.floor(posX);
-                int j1 = MathHelper.floor(posY + (double) ((f17 + f18) / 2.0F / 16.0F));
-                int k1 = MathHelper.floor(posZ);
-                if (direction == Direction.NORTH)
-                {
-                    i1 = MathHelper.floor(posX + (double) ((f15 + f16) / 2.0F / 16.0F));
-                }
-
-                if (direction == Direction.WEST)
-                {
-                    k1 = MathHelper.floor(posZ - (double) ((f15 + f16) / 2.0F / 16.0F));
-                }
-
-                if (direction == Direction.SOUTH)
-                {
-                    i1 = MathHelper.floor(posX - (double) ((f15 + f16) / 2.0F / 16.0F));
-                }
-
-                if (direction == Direction.EAST)
-                {
-                    k1 = MathHelper.floor(posZ + (double) ((f15 + f16) / 2.0F / 16.0F));
-                }
 
                 IVertexBuilder builder = buffer.getBuffer(RenderType.getEntitySolid(backSprite.getAtlasTexture().getTextureLocation()));
                 pos(matrix4f, matrix3f, builder, f15, f17, f3, f5, 0.5F, 0, 0, 1, combinedLight);

@@ -2,16 +2,19 @@ package io.github.ocelot.init;
 
 import io.github.ocelot.WorldPainter;
 import io.github.ocelot.dimension.PaintedLeavesColor;
+import io.github.ocelot.entity.render.AfroLayer;
 import io.github.ocelot.entity.render.WorldPaintingEntityRenderer;
 import io.github.ocelot.item.PaintDyeable;
 import io.github.ocelot.tileentity.PaintBucketTileEntity;
 import io.github.ocelot.tileentity.renderer.EaselTileEntityRenderer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ColorCache;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.client.renderer.entity.PlayerRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.Item;
 import net.minecraft.world.level.ColorResolver;
@@ -27,6 +30,8 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 
@@ -39,6 +44,8 @@ public class PainterClientRegistry
 {
     public static final ColorResolver PAINTED_LEAVES_RESOLVER = (biome, posX, posZ) -> biome instanceof PaintedLeavesColor ? ((PaintedLeavesColor) biome).getFoliageColor(posX, posZ) : -1;
 
+    private static final Logger LOGGER = LogManager.getLogger();
+
     @OnlyIn(Dist.CLIENT)
     public static void init(IEventBus bus)
     {
@@ -48,6 +55,11 @@ public class PainterClientRegistry
         RenderTypeLookup.setRenderLayer(PainterBlocks.PAINTED_LEAVES.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(PainterBlocks.PAINT_BUCKET.get(), RenderType.getCutout());
         MinecraftForge.EVENT_BUS.register(PainterClientRegistry.class);
+
+        for (PlayerRenderer render : Minecraft.getInstance().getRenderManager().getSkinMap().values())
+        {
+            render.addLayer(new AfroLayer(render));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -64,7 +76,7 @@ public class PainterClientRegistry
                     map.put(PAINTED_LEAVES_RESOLVER, new ColorCache());
             } catch (IllegalAccessException e)
             {
-                WorldPainter.LOGGER.error("Could not access block colors", e);
+                LOGGER.error("Could not access block colors", e);
             }
         }
     }

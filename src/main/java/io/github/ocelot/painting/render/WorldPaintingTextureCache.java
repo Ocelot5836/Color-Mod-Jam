@@ -14,6 +14,8 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -36,6 +38,7 @@ public class WorldPaintingTextureCache
     public static final ResourceLocation MISSING = new ResourceLocation(WorldPainter.MOD_ID, "textures/painting/world_painting.png");
     public static final ResourceLocation BORDER = new ResourceLocation(WorldPainter.MOD_ID, "textures/painting/world_painting_border.png");
 
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final Map<Integer, MutablePair<ResourceLocation, Long>> CACHE = new HashMap<>();
 
     private static MutablePair<ResourceLocation, Long> generateTexture(Painting painting)
@@ -54,7 +57,7 @@ public class WorldPaintingTextureCache
     {
         if (CACHE.containsKey(key))
         {
-            WorldPainter.LOGGER.debug("Deleting painting '" + key + "'");
+            LOGGER.debug("Deleting painting '" + key + "'");
             Minecraft.getInstance().getTextureManager().deleteTexture(CACHE.remove(key).getLeft());
         }
     }

@@ -104,6 +104,10 @@ repositories {
         name = "JitPack"
         url = "https://jitpack.io"
     }
+    maven {
+        name = "Curios"
+        url = "https://maven.theillusivec4.top/"
+    }
 }
 
 dependencies {
@@ -115,6 +119,9 @@ dependencies {
     compileOnly fg.deobf("com.github.Ocelot5836:FishLib:${project.minecraft}-${project.fishLib}:api")
     runtimeOnly fg.deobf("com.github.Ocelot5836:FishLib:${project.minecraft}-${project.fishLib}")
     shade "com.github.Ocelot5836:FishLib:${project.minecraft}-${project.fishLib}"
+
+//    runtimeOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-${project.minecraft}-${project.curios}")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-${project.minecraft}-${project.curios}:api")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

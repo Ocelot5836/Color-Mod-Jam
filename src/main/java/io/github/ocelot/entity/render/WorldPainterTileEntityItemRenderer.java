@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
 
 /**
  * @author Ocelot
@@ -27,7 +26,7 @@ public class WorldPainterTileEntityItemRenderer extends ItemStackTileEntityRende
         Painting painting = null;
         if (Minecraft.getInstance().world != null && stack.getItem() instanceof WorldPaintingItem)
             painting = PaintingManager.get(Minecraft.getInstance().world).getPainting(((WorldPaintingItem) stack.getItem()).getPaintingId(stack));
-        WorldPaintingRenderer.renderPainting(0, 0, 0, Direction.SOUTH, matrixStack, buffer, painting, true, combinedLight);
+        WorldPaintingRenderer.renderPainting(matrixStack, buffer, painting, true, combinedLight);
         matrixStack.pop();
     }
 }

@@ -1,7 +1,8 @@
 package io.github.ocelot.painting;
 
-import io.github.ocelot.WorldPainter;
 import net.minecraft.nbt.CompoundNBT;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -14,6 +15,8 @@ public class Painting
 {
     public static final int SIZE = 32;
     public static final Painting PLAD_PAINTING;
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     static
     {
@@ -224,7 +227,7 @@ public class Painting
     {
         if (pixels.length != SIZE * SIZE)
         {
-            WorldPainter.LOGGER.warn("Read painting pixels with unexpected size ({}) when {} was expected.", pixels.length, SIZE * SIZE);
+            LOGGER.warn("Read painting pixels with unexpected size ({}) when {} was expected.", pixels.length, SIZE * SIZE);
             return false;
         }
         return true;

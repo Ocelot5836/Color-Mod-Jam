@@ -18,6 +18,9 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
+/**
+ * @author Ocelot
+ */
 public class WorldPaintingItem extends HangingEntityItem
 {
     public WorldPaintingItem(Properties properties)

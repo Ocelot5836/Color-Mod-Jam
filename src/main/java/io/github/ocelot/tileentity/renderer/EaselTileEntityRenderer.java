@@ -31,7 +31,7 @@ public class EaselTileEntityRenderer extends TileEntityRenderer<EaselTileEntity>
             stack.translate(0, 24, 3);
             stack.rotate(Vector3f.XP.rotationDegrees(22.5f));
             stack.scale(0.5f, 0.5f, 0.5f);
-            WorldPaintingRenderer.renderPainting(0, 0, 0, te.getBlockState().get(EaselBlock.HORIZONTAL_FACING), stack, buffer, te.getPainting(), false, combinedLight);
+            WorldPaintingRenderer.renderPainting(stack, buffer, te.getPainting(), false, combinedLight);
             stack.pop();
         }
     }
