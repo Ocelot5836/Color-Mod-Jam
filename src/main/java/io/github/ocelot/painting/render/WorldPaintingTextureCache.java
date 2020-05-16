@@ -111,7 +111,10 @@ public class WorldPaintingTextureCache
      */
     public static void updateTexture(Painting painting)
     {
-        fillTexture(painting);
+        if (CACHE.containsKey(painting.getId()))
+        {
+            fillTexture(painting);
+        }
     }
 
     /**
