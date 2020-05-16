@@ -5,6 +5,7 @@ import io.github.ocelot.common.VoxelShapeHelper;
 import io.github.ocelot.init.PainterItems;
 import io.github.ocelot.init.PainterStats;
 import io.github.ocelot.item.Paintbrush;
+import io.github.ocelot.painting.FixedPaintingType;
 import io.github.ocelot.painting.Painting;
 import io.github.ocelot.painting.PaintingManager;
 import io.github.ocelot.tileentity.EaselTileEntity;
@@ -112,9 +113,9 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
                                 int pixelY = (int) ((1.0 - normalResult.getY()) * 1.107142857142857 * Painting.SIZE);
                                 int color = paintbrush.getColor(stack);
 
-                                if (Painting.PLAD_PAINTING.getId().equals(te.getPaintingId()) || !PaintingManager.get(world).hasPainting(te.getPaintingId()))
+                                if (FixedPaintingType.isFixed(te.getPaintingId()) || !PaintingManager.get(world).hasPainting(te.getPaintingId()))
                                 {
-                                    Painting painting = new Painting(Painting.PLAD_PAINTING);
+                                    Painting painting = new Painting(FixedPaintingType.get(te.getPaintingId()));
                                     PaintingManager.get(world).addPainting(painting);
                                     te.setPainting(painting.getId());
                                 }

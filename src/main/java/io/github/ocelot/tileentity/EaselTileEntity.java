@@ -2,6 +2,7 @@ package io.github.ocelot.tileentity;
 
 import io.github.ocelot.init.PainterBlocks;
 import io.github.ocelot.init.PainterItems;
+import io.github.ocelot.painting.FixedPaintingType;
 import io.github.ocelot.painting.Painting;
 import io.github.ocelot.painting.PaintingHolder;
 import io.github.ocelot.painting.PaintingManager;
@@ -134,15 +135,17 @@ public class EaselTileEntity extends TileEntity implements PaintingHolder, ISide
     @Override
     public void setInventorySlotContents(int index, ItemStack stack)
     {
-        if (index == 0)
+        if (this.world != null && index == 0)
         {
-            UUID stackPaintingId = PainterItems.WORLD_PAINTING.get().getPaintingId(stack);
-            if (stackPaintingId == null)
+            UUID stackId = PainterItems.WORLD_PAINTING.get().getPaintingId(stack);
+            if (FixedPaintingType.isFixed(stackId))
             {
-                this.addNewPainting();
+                this.setPainting(stackId);
                 return;
             }
-            this.setPainting(stackPaintingId);
+            Painting painting = new Painting(PaintingManager.get(this.world).getPainting(PainterItems.WORLD_PAINTING.get().getPaintingId(stack)));
+            PaintingManager.get(this.world).addPainting(painting);
+            this.setPainting(painting.getId());
         }
     }
 

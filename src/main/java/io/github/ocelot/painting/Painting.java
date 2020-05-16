@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundNBT;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
@@ -15,22 +16,8 @@ import java.util.UUID;
 public class Painting
 {
     public static final int SIZE = 32;
-    public static final Painting PLAD_PAINTING;
 
     private static final Logger LOGGER = LogManager.getLogger();
-
-    static
-    {
-        int[] pixels = new int[SIZE * SIZE];
-        for (int y = 0; y < SIZE; y++)
-        {
-            for (int x = 0; x < SIZE; x++)
-            {
-                pixels[x + y * SIZE] = (Math.abs(x * 128) & 0xff) << 16 | Math.abs(y * 128) & 0xff;
-            }
-        }
-        PLAD_PAINTING = new Painting(pixels, UUID.fromString("56208243-31d3-4438-a9d1-20b10bda1314"), true);
-    }
 
     private final int[] pixels;
     private UUID id;
@@ -38,7 +25,7 @@ public class Painting
     private int index;
     private PaintingManagerSavedData paintingManager;
 
-    private Painting(int[] pixels, UUID id, boolean hasBorder)
+    Painting(int[] pixels, UUID id, boolean hasBorder)
     {
         if (validateSize(pixels))
         {
@@ -64,12 +51,19 @@ public class Painting
         this.index = -1;
     }
 
-    public Painting(Painting parent)
+    public Painting(@Nullable Painting parent)
     {
         this.pixels = new int[SIZE * SIZE];
-        System.arraycopy(parent.pixels, 0, this.pixels, 0, parent.pixels.length);
+        if (parent == null)
+        {
+            Arrays.fill(this.pixels, DyeColor.WHITE.getColorValue());
+        }
+        else
+        {
+            System.arraycopy(parent.pixels, 0, this.pixels, 0, parent.pixels.length);
+        }
         this.id = UUID.randomUUID();
-        this.hasBorder = parent.hasBorder;
+        this.hasBorder = parent != null && parent.hasBorder;
         this.index = -1;
     }
 
@@ -139,8 +133,9 @@ public class Painting
      */
     public void shuffleId()
     {
-        if (this != PLAD_PAINTING)
-            this.id = UUID.randomUUID();
+        if (FixedPaintingType.isFixed(this.getId()))
+            return;
+        this.id = UUID.randomUUID();
         if (this.paintingManager != null)
             this.paintingManager.sync(this);
     }

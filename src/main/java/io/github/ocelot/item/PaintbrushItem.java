@@ -67,7 +67,7 @@ public class PaintbrushItem extends Item implements Paintbrush
                 if (!world.isRemote())
                 {
                     if(!player.isCreative()){
-                        
+
                     }
                     this.setColor(stack, color);
                     this.setPaint(stack, this.getBrush(stack).getMaxPaint());

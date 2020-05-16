@@ -1,7 +1,7 @@
 package io.github.ocelot.item;
 
 import io.github.ocelot.entity.WorldPaintingEntity;
-import io.github.ocelot.painting.Painting;
+import io.github.ocelot.painting.FixedPaintingType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.HangingEntityItem;
@@ -34,9 +34,12 @@ public class WorldPaintingItem extends HangingEntityItem
         super.fillItemGroup(group, items);
         if (this.isInGroup(group))
         {
-            ItemStack stack = new ItemStack(this);
-            this.setPainting(stack, Painting.PLAD_PAINTING.getId());
-            items.add(stack);
+            for (FixedPaintingType type : FixedPaintingType.values())
+            {
+                ItemStack stack = new ItemStack(this);
+                this.setPainting(stack, type.getPainting().getId());
+                items.add(stack);
+            }
         }
     }
 

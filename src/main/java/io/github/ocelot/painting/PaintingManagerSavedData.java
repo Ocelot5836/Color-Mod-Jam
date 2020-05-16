@@ -64,7 +64,7 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
     @Override
     public void addPainting(Painting painting) throws IllegalStateException
     {
-        if (Painting.PLAD_PAINTING.getId().equals(painting.getId()))
+        if (FixedPaintingType.isFixed(painting.getId()))
             return;
         if (this.paintings.containsKey(painting.getId()))
             painting.shuffleId();
@@ -77,7 +77,7 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
     @Override
     public void removePainting(UUID id)
     {
-        if (Painting.PLAD_PAINTING.getId().equals(id))
+        if (FixedPaintingType.isFixed(id))
             return;
         this.paintings.remove(id);
         this.markDirty();
@@ -87,14 +87,14 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
     @Override
     public boolean hasPainting(UUID id)
     {
-        return Painting.PLAD_PAINTING.getId().equals(id) || this.paintings.containsKey(id);
+        return FixedPaintingType.isFixed(id) || this.paintings.containsKey(id);
     }
 
     @Nullable
     @Override
     public Painting getPainting(UUID id)
     {
-        return Painting.PLAD_PAINTING.getId().equals(id) ? Painting.PLAD_PAINTING : this.paintings.get(id);
+        return FixedPaintingType.isFixed(id) ? FixedPaintingType.get(id) : this.paintings.get(id);
     }
 
     @Override

@@ -5,6 +5,7 @@ import io.github.ocelot.init.PainterEntities;
 import io.github.ocelot.init.PainterItems;
 import io.github.ocelot.init.PainterMessages;
 import io.github.ocelot.network.SpawnWorldPaintingMessage;
+import io.github.ocelot.painting.FixedPaintingType;
 import io.github.ocelot.painting.Painting;
 import io.github.ocelot.painting.PaintingHolder;
 import io.github.ocelot.painting.PaintingManager;
@@ -134,7 +135,7 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
         {
             if (this.world.getDimension().getType() == DimensionType.OVERWORLD)
             {
-                if (Painting.PLAD_PAINTING.getId().equals(this.paintingId))
+                if (FixedPaintingType.isFixed(this.paintingId))
                 {
                     player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()), new PladTeleporter());
                     return;
@@ -142,7 +143,7 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
             }
             else if (this.world.getDimension().getType() == PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()))
             {
-                if (Painting.PLAD_PAINTING.getId().equals(this.paintingId))
+                if (FixedPaintingType.isFixed(this.paintingId))
                 {
                     player.changeDimension(DimensionType.OVERWORLD, new PladTeleporter());
                 }
