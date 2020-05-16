@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "paint_brush",
+  "pattern": [
+    "W",
+    "T",
+    "T"
+  ],
+  "key": {
+    "W": {
+      "tag": "minecraft:wool"
+    },
+    "T": {
+      "tag": "forge:rods/wooden"
+    }
+  },
+  "result": {
+    "item": "worldpainter:medium_paintbrush"
+  }
+}

@@ -18,5 +18,6 @@ public class PainterDataGenerators
     {
         DataGenerator generator = event.getGenerator();
         generator.addProvider(new PainterLootTableProvider(generator));
+        generator.addProvider(new PainterRecipeProvider(generator));
     }
 }

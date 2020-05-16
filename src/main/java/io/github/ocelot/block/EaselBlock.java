@@ -146,7 +146,11 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
             else if (stack.getItem() == PainterItems.WORLD_PAINTING.get())
             {
                 if (!world.isRemote())
+                {
                     te.setInventorySlotContents(0, stack);
+                    if (!player.isCreative())
+                        stack.shrink(1);
+                }
                 return ActionResultType.SUCCESS;
             }
         }
