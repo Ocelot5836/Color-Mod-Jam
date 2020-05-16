@@ -2,6 +2,7 @@ package io.github.ocelot.item;
 
 import io.github.ocelot.WorldPainter;
 import io.github.ocelot.block.EaselBlock;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.Constants;
@@ -22,6 +23,18 @@ public interface Paintbrush extends PaintDyeable
      * @return The size of this paint brush
      */
     BrushSize getBrush(ItemStack stack);
+
+    @Override
+    default boolean hasColor(ItemStack stack)
+    {
+        return this.getPaint(stack) > 0 && PaintDyeable.super.hasColor(stack);
+    }
+
+    @Override
+    default int getColor(ItemStack stack)
+    {
+        return this.getPaint(stack) > 0 ? PaintDyeable.super.getColor(stack) : DyeColor.WHITE.getColorValue();
+    }
 
     /**
      * Fetches the amount of paint from the specified stack.
@@ -53,7 +66,7 @@ public interface Paintbrush extends PaintDyeable
      */
     enum BrushSize
     {
-        SMALL(64, 1, 1), MEDIUM(32, 3, 3), LARGE(16, 5, 5);
+        SMALL(128, 1, 1), MEDIUM(64, 3, 3), LARGE(32, 5, 5);
 
         private final int maxPaint;
         private final int width;

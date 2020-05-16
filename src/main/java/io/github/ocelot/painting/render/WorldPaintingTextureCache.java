@@ -1,5 +1,6 @@
 package io.github.ocelot.painting.render;
 
+import com.google.common.base.Stopwatch;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.ocelot.WorldPainter;
 import io.github.ocelot.painting.Painting;
@@ -42,19 +43,6 @@ public class WorldPaintingTextureCache
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Map<UUID, MutablePair<ResourceLocation, Long>> CACHE = new HashMap<>();
-
-//    private static MutablePair<ResourceLocation, Long> generateTexture(Painting painting)
-//    {
-//        TextureManager textureManager = Minecraft.getInstance().getTextureManager();
-//        NativeImage image = new NativeImage(Painting.SIZE, Painting.SIZE, true);
-//        for (int y = 0; y < Painting.SIZE; y++)
-//            for (int x = 0; x < Painting.SIZE; x++)
-//                image.setPixelRGBA(x, y, painting.getPixel(x, y));
-//        ResourceLocation location = textureManager.getDynamicTextureLocation("world_painting", new DynamicTexture(image));
-//
-//
-//        return new MutablePair<>(location, System.currentTimeMillis());
-//    }
 
     @Nullable
     private static DynamicTexture getTexture(UUID id)
@@ -138,9 +126,15 @@ public class WorldPaintingTextureCache
             return MISSING;
         UUID id = painting.getId();
         if (CACHE.containsKey(id))
+        {
             CACHE.get(id).setRight(System.currentTimeMillis());
-        if (!CACHE.containsKey(id))
+        }
+        else
+        {
+            Stopwatch stopwatch = Stopwatch.createStarted();
             fillTexture(painting);
+            LOGGER.debug("Generated texture for painting '{} took {}", painting.getId(), stopwatch);
+        }
         return CACHE.get(id).getLeft();
     }
 }

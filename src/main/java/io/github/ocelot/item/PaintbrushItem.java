@@ -1,8 +1,13 @@
 package io.github.ocelot.item;
 
 import io.github.ocelot.WorldPainter;
+import io.github.ocelot.init.PainterStats;
 import io.github.ocelot.tileentity.PaintBucketTileEntity;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CauldronBlock;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -51,6 +56,7 @@ public class PaintbrushItem extends Item implements Paintbrush
     public ActionResultType onItemUse(ItemUseContext context)
     {
         World world = context.getWorld();
+        PlayerEntity player = context.getPlayer();
         BlockPos pos = context.getPos();
         ItemStack stack = context.getItem();
         if (world.getTileEntity(pos) instanceof PaintBucketTileEntity)
@@ -60,9 +66,29 @@ public class PaintbrushItem extends Item implements Paintbrush
             {
                 if (!world.isRemote())
                 {
+                    if(!player.isCreative()){
+                        
+                    }
                     this.setColor(stack, color);
                     this.setPaint(stack, this.getBrush(stack).getMaxPaint());
-                    world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.PLAYERS, 1.0F, 0.5F);
+                    world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, SoundCategory.PLAYERS, 0.1F, 2.0F);
+                }
+                return ActionResultType.SUCCESS;
+            }
+        }
+        if (this.hasColor(stack) && world.getBlockState(pos).getBlock() == Blocks.CAULDRON)
+        {
+            BlockState state = world.getBlockState(pos);
+            int level = state.get(CauldronBlock.LEVEL);
+            if (level > 0)
+            {
+                if (!world.isRemote())
+                {
+                    this.removeColor(stack);
+                    world.setBlockState(pos, state.with(CauldronBlock.LEVEL, level - 1));
+                    if (player != null && !player.isCreative())
+                        player.addStat(PainterStats.CLEAN_PAINT_BRUSH);
+                    world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, SoundCategory.PLAYERS, 0.1F, 2.0F);
                 }
                 return ActionResultType.SUCCESS;
             }
@@ -73,13 +99,13 @@ public class PaintbrushItem extends Item implements Paintbrush
     @Override
     public boolean showDurabilityBar(ItemStack stack)
     {
-        return this.getPaint(stack) < this.getBrush(stack).getMaxPaint();
+        return this.hasColor(stack) && this.getPaint(stack) < this.getBrush(stack).getMaxPaint();
     }
 
     @Override
     public double getDurabilityForDisplay(ItemStack stack)
     {
-        return (double) this.getPaint(stack) / (double) this.getBrush(stack).getMaxPaint();
+        return 1.0 - (double) this.getPaint(stack) / (double) this.getBrush(stack).getMaxPaint();
     }
 
     @Override

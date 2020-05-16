@@ -20,5 +20,9 @@
 	"block.worldpainter.spruce_easel": "Spruce Easel",
 	"block.worldpainter.jungle_easel": "Jungle Easel",
 	"block.worldpainter.acacia_easel": "Acacia Easel",
-	"block.worldpainter.dark_oak_easel": "Dark Oak Easel"
+	"block.worldpainter.dark_oak_easel": "Dark Oak Easel",
+
+	"stat.worldpainter.paint": "Easels Painted",
+	"stat.worldpainter.clean_paint_brush": "Paint Brushes Cleaned",
+	"stat.worldpainter.clean_paint_bucket": "Paint Buckets Cleaned"
 }

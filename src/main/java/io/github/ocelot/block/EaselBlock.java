@@ -3,6 +3,7 @@ package io.github.ocelot.block;
 import io.github.ocelot.common.BaseBlock;
 import io.github.ocelot.common.VoxelShapeHelper;
 import io.github.ocelot.init.PainterItems;
+import io.github.ocelot.init.PainterStats;
 import io.github.ocelot.item.Paintbrush;
 import io.github.ocelot.painting.Painting;
 import io.github.ocelot.painting.PaintingManager;
@@ -88,17 +89,17 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
                 {
                     if (stack.getItem() instanceof Paintbrush)
                     {
+                        Paintbrush paintbrush = (Paintbrush) stack.getItem();
+
+                        if (paintbrush.getPaint(stack) <= 0)
+                            return ActionResultType.PASS;
+
                         Direction facing = state.get(HORIZONTAL_FACING);
                         Vec3d lookVec = player.getLookVec();
                         double reach = player.getAttribute(PlayerEntity.REACH_DISTANCE).getValue();
                         Vec3d start = player.getEyePosition(0);
                         Vec3d end = start.add(lookVec.mul(reach, reach, reach));
-
                         Vec3d result = raytrace(new Vec3d(pos.add(facing == Direction.SOUTH || facing == Direction.WEST ? 0 : 1, 0, facing == Direction.SOUTH || facing == Direction.WEST ? 1 : 0)).subtract(facing.getXOffset() * 0.45, 0, facing.getZOffset() * 0.45), new Vec3d(facing.getXOffset(), 0.45, facing.getZOffset()), start, end);
-
-                        // 0, 0, 0.5
-
-                        // 0, 14, 15.6
 
                         if (result != null)
                         {
@@ -109,7 +110,7 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
                                 double imageX = facing.getZOffset() * normalResult.getX() + facing.getXOffset() * normalResult.getZ();
                                 int pixelX = (int) ((reverse ? 1 - (imageX < 0 ? 1 + imageX : imageX) : (imageX < 0 ? 1 + imageX : imageX)) * Painting.SIZE);
                                 int pixelY = (int) ((1.0 - normalResult.getY()) * 1.107142857142857 * Painting.SIZE);
-                                int color = ((Paintbrush) stack.getItem()).getColor(stack);
+                                int color = paintbrush.getColor(stack);
 
                                 if (Painting.PLAD_PAINTING.getId().equals(te.getPaintingId()) || !PaintingManager.get(world).hasPainting(te.getPaintingId()))
                                 {
@@ -119,9 +120,18 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
                                 }
 
                                 Painting painting = PaintingManager.get(world).getPainting(te.getPaintingId());
-                                Paintbrush.BrushSize brushSize = ((Paintbrush) stack.getItem()).getBrush(stack);
+                                Paintbrush.BrushSize brushSize = paintbrush.getBrush(stack);
                                 if (painting != null)
+                                {
+                                    if (!player.isCreative())
+                                    {
+                                        player.addStat(PainterStats.PAINT);
+                                        paintbrush.setPaint(stack, paintbrush.getPaint(stack) - 1);
+                                        if (paintbrush.getPaint(stack) <= 0)
+                                            paintbrush.removeColor(stack);
+                                    }
                                     painting.fill(pixelX - brushSize.getWidth() / 2, pixelY - brushSize.getHeight() / 2, brushSize.getWidth(), brushSize.getHeight(), color);
+                                }
                             }
                         }
                     }
