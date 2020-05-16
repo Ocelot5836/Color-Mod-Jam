@@ -3,7 +3,9 @@ package io.github.ocelot.block;
 import io.github.ocelot.common.BaseBlock;
 import io.github.ocelot.common.VoxelShapeHelper;
 import io.github.ocelot.init.PainterItems;
+import io.github.ocelot.item.Paintbrush;
 import io.github.ocelot.painting.Painting;
+import io.github.ocelot.painting.PaintingManager;
 import io.github.ocelot.tileentity.EaselTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -15,7 +17,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -33,11 +34,9 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * @author Ocelot
@@ -79,12 +78,15 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
         if (world.getTileEntity(easelPos) instanceof EaselTileEntity)
         {
             EaselTileEntity te = (EaselTileEntity) Objects.requireNonNull(world.getTileEntity(easelPos));
+            if (!te.isUsableByPlayer(player))
+                return ActionResultType.PASS;
+
             ItemStack stack = player.getHeldItem(hand);
-            if (te.getPaintingId() != null)
+            if (!te.isEmpty())
             {
-                if (stack.getItem() == PainterItems.PAINT_BRUSH.get())
+                if (!world.isRemote())
                 {
-                    if (!world.isRemote())
+                    if (stack.getItem() instanceof Paintbrush)
                     {
                         Direction facing = state.get(HORIZONTAL_FACING);
                         Vec3d lookVec = player.getLookVec();
@@ -92,7 +94,7 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
                         Vec3d start = player.getEyePosition(0);
                         Vec3d end = start.add(lookVec.mul(reach, reach, reach));
 
-                        Vec3d result = raytrace(new Vec3d(pos.add(facing == Direction.SOUTH || facing == Direction.WEST ? 0 : 1, 0, facing == Direction.SOUTH || facing == Direction.WEST ? 1 : 0)).subtract(facing.getXOffset() * 0.425, 0, facing.getZOffset() * 0.425), new Vec3d(facing.getXOffset(), 0.45, facing.getZOffset()), start, end);
+                        Vec3d result = raytrace(new Vec3d(pos.add(facing == Direction.SOUTH || facing == Direction.WEST ? 0 : 1, 0, facing == Direction.SOUTH || facing == Direction.WEST ? 1 : 0)).subtract(facing.getXOffset() * 0.45, 0, facing.getZOffset() * 0.45), new Vec3d(facing.getXOffset(), 0.45, facing.getZOffset()), start, end);
 
                         // 0, 0, 0.5
 
@@ -100,45 +102,40 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
 
                         if (result != null)
                         {
-                            Vec3d normalResult = result.subtract(pos.getX(), pos.getY(), pos.getZ());
-                            if(normalResult.getX() >= 0 && normalResult.getX() < 1 && normalResult.getY() >= 0 && normalResult.getY() < 1)
+                            Vec3d normalResult = result.subtract(pos.getX(), pos.getY(), pos.getZ()).add(0, 0.03125, 0);
+                            if (normalResult.getX() >= 0 && normalResult.getX() < 1 && normalResult.getY() >= 0 && normalResult.getY() < 1 && normalResult.getZ() >= 0 && normalResult.getZ() < 1)
                             {
-                                int pixelX = (int) Math.round(normalResult.getX() * Painting.SIZE);
-                                int pixelY = (int) Math.round((1.0 - normalResult.getY()) * Painting.SIZE);
-                            System.out.println(pixelX + ", " + pixelY);
-                            ((ServerWorld) world).spawnParticle(ParticleTypes.MYCELIUM, result.getX(), result.getY(), result.getZ(), 100, 0, 0, 0, 0);}
+                                boolean reverse = facing.getAxis() == Direction.Axis.X;
+                                double imageX = facing.getZOffset() * normalResult.getX() + facing.getXOffset() * normalResult.getZ();
+                                int pixelX = (int) ((reverse ? 1 - (imageX < 0 ? 1 + imageX : imageX) : (imageX < 0 ? 1 + imageX : imageX)) * Painting.SIZE);
+                                int pixelY = (int) ((1.0 - normalResult.getY()) * 1.107142857142857 * Painting.SIZE);
+                                int color = ((Paintbrush) stack.getItem()).getColor(stack);
+
+                                if (Painting.PLAD_PAINTING.getId().equals(te.getPaintingId()) || !PaintingManager.get(world).hasPainting(te.getPaintingId()))
+                                {
+                                    Painting painting = new Painting(Painting.PLAD_PAINTING);
+                                    PaintingManager.get(world).addPainting(painting);
+                                    te.setPainting(painting.getId());
+                                }
+
+                                Painting painting = PaintingManager.get(world).getPainting(te.getPaintingId());
+                                Paintbrush.BrushSize brushSize = ((Paintbrush) stack.getItem()).getBrush(stack);
+                                if (painting != null)
+                                    painting.fill(pixelX - brushSize.getWidth() / 2, pixelY - brushSize.getHeight() / 2, brushSize.getWidth(), brushSize.getHeight(), color);
+                            }
                         }
                     }
-                    return ActionResultType.SUCCESS;
-                }
-                else
-                {
-                    if (!world.isRemote())
+                    else
                     {
-                        UUID paintingId = te.getPaintingId();
-                        te.setPainting(null);
-                        ItemStack teStack = new ItemStack(PainterItems.WORLD_PAINTING.get());
-                        PainterItems.WORLD_PAINTING.get().setPainting(teStack, paintingId);
-                        world.addEntity(new ItemEntity(world, pos.getX() + 0.5 + state.get(HORIZONTAL_FACING).getXOffset() / 1.9, pos.getY() + 0.5 + (state.get(HALF) == DoubleBlockHalf.LOWER ? 1 : 0), pos.getZ() + 0.5 + state.get(HORIZONTAL_FACING).getZOffset() / 1.9, teStack));
+                        world.addEntity(new ItemEntity(world, pos.getX() + 0.5 + state.get(HORIZONTAL_FACING).getXOffset() / 1.9, pos.getY() + 0.5 + (state.get(HALF) == DoubleBlockHalf.LOWER ? 1 : 0), pos.getZ() + 0.5 + state.get(HORIZONTAL_FACING).getZOffset() / 1.9, te.removeStackFromSlot(0)));
                     }
-                    return ActionResultType.SUCCESS;
                 }
+                return ActionResultType.SUCCESS;
             }
             else if (stack.getItem() == PainterItems.WORLD_PAINTING.get())
             {
                 if (!world.isRemote())
-                {
-                    UUID paintingId = PainterItems.WORLD_PAINTING.get().getPaintingId(stack);
-                    if (paintingId == null)
-                    {
-                        te.addNewPainting();
-                    }
-                    else
-                    {
-                        te.setPainting(paintingId);
-                    }
-                    stack.shrink(1);
-                }
+                    te.setInventorySlotContents(0, stack);
                 return ActionResultType.SUCCESS;
             }
         }
@@ -169,7 +166,6 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
         }
     }
 
-    @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context)
     {
@@ -220,9 +216,6 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
                 spawnDrops(state, world, doubleblockhalf == DoubleBlockHalf.UPPER ? pos.down() : pos, null, player, player.getHeldItemMainhand());
             }
         }
-
-//        Huh?
-//        super.onBlockHarvested(world, pos, state, player);
     }
 
     @Override
@@ -261,17 +254,4 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
         }
         return shapes;
     }
-
-//    private static VoxelShape[] getPaintingShapes()
-//    {
-//        VoxelShape[] shapes = new VoxelShape[4];
-//        VoxelShapeHelper.Builder partBuilder = new VoxelShapeHelper.Builder().append(Block.makeCuboidShape(0, 0.5, 7.75, 16, 2, 8.25));
-//        for (Direction facing : Direction.values())
-//        {
-//            if (facing.getHorizontalIndex() == -1)
-//                continue;
-//            shapes[facing.getHorizontalIndex()] = partBuilder.rotate(facing).build();
-//        }
-//        return shapes;
-//    }
 }

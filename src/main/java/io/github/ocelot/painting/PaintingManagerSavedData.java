@@ -3,6 +3,7 @@ package io.github.ocelot.painting;
 import io.github.ocelot.init.PainterMessages;
 import io.github.ocelot.network.AddPaintingMessage;
 import io.github.ocelot.network.RemovePaintingMessage;
+import io.github.ocelot.network.SyncPaintingMessage;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -67,6 +68,7 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
             return;
         if (this.paintings.containsKey(painting.getId()))
             painting.shuffleId();
+        painting.setPaintingManager(this);
         this.paintings.put(painting.getId(), painting);
         this.markDirty();
         PainterMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new AddPaintingMessage(painting));
@@ -109,6 +111,7 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
         for (int i = 0; i < paintingsNbt.size(); i++)
         {
             Painting painting = new Painting(paintingsNbt.getCompound(i));
+            painting.setPaintingManager(this);
             this.paintings.put(painting.getId(), painting);
         }
         this.nextId = nbt.getInt("nextId");
@@ -127,5 +130,11 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
     public void setWorld(ServerWorld world)
     {
         this.world = world;
+    }
+
+    public void sync(Painting painting)
+    {
+        this.markDirty();
+        PainterMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new SyncPaintingMessage(painting));
     }
 }

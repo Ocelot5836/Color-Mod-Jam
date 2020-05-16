@@ -6,6 +6,10 @@
 	"itemGroup.worldpainter": "World Painter",
 
 	"item.worldpainter.paintbrush": "Paint Brush",
+	"item.worldpainter.paintbrush.brush": "Brush: %s",
+	"item.worldpainter.paintbrush.brush.small": "Small",
+	"item.worldpainter.paintbrush.brush.medium": "Medium",
+	"item.worldpainter.paintbrush.brush.large": "Large",
 	"item.worldpainter.world_painting": "Teleportation Painting",
 	"item.worldpainter.afro": "Bob Ross's Afro",
 

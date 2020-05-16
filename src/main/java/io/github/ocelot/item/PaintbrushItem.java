@@ -1,27 +1,50 @@
 package io.github.ocelot.item;
 
+import io.github.ocelot.WorldPainter;
 import io.github.ocelot.tileentity.PaintBucketTileEntity;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 
+import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Objects;
 
 /**
  * @author Ocelot
  */
-public class PaintbrushItem extends Item implements PaintDyeable
+public class PaintbrushItem extends Item implements Paintbrush
 {
-    public PaintbrushItem(Properties properties)
+    private final BrushSize brushSize;
+
+    public PaintbrushItem(BrushSize brushSize, Properties properties)
     {
         super(properties);
+        this.brushSize = brushSize;
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag)
+    {
+        tooltip.add(new TranslationTextComponent(this.getTranslationKey(stack) + ".brush", new TranslationTextComponent(this.brushSize.getTranslationKey())).setStyle(new Style().setColor(TextFormatting.GRAY)));
+    }
+
+    @Override
+    public String getTranslationKey(ItemStack stack)
+    {
+        return "item." + WorldPainter.MOD_ID + ".paintbrush";
     }
 
     @Override
@@ -33,10 +56,14 @@ public class PaintbrushItem extends Item implements PaintDyeable
         if (world.getTileEntity(pos) instanceof PaintBucketTileEntity)
         {
             int color = ((PaintBucketTileEntity) Objects.requireNonNull(world.getTileEntity(pos))).getColor();
-            if (!this.hasColor(stack) || this.getPaint(stack) < MAX_PAINT || this.getColor(stack) != color)
+            if (!this.hasColor(stack) || this.getPaint(stack) < this.getBrush(stack).getMaxPaint() || this.getColor(stack) != color)
             {
-                this.setColor(stack, color);
-                this.setPaint(stack, MAX_PAINT);
+                if (!world.isRemote())
+                {
+                    this.setColor(stack, color);
+                    this.setPaint(stack, this.getBrush(stack).getMaxPaint());
+                    world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.PLAYERS, 1.0F, 0.5F);
+                }
                 return ActionResultType.SUCCESS;
             }
         }
@@ -46,13 +73,13 @@ public class PaintbrushItem extends Item implements PaintDyeable
     @Override
     public boolean showDurabilityBar(ItemStack stack)
     {
-        return this.getPaint(stack) < MAX_PAINT;
+        return this.getPaint(stack) < this.getBrush(stack).getMaxPaint();
     }
 
     @Override
     public double getDurabilityForDisplay(ItemStack stack)
     {
-        return (double) this.getPaint(stack) / (double) MAX_PAINT;
+        return (double) this.getPaint(stack) / (double) this.getBrush(stack).getMaxPaint();
     }
 
     @Override
@@ -61,30 +88,14 @@ public class PaintbrushItem extends Item implements PaintDyeable
         if (this.isInGroup(group))
         {
             ItemStack stack = new ItemStack(this);
-            this.setPaint(stack, MAX_PAINT);
+            this.setPaint(stack, this.getBrush(stack).getMaxPaint());
             items.add(stack);
         }
     }
-    /**
-     * Fetches the amount of paint from the specified stack.
-     *
-     * @param stack The stack to query
-     * @return The amount of paint left in the stack
-     */
-    public int getPaint(ItemStack stack)
-    {
-        CompoundNBT compoundnbt = stack.getTag();
-        return compoundnbt != null && compoundnbt.contains("paint", Constants.NBT.TAG_ANY_NUMERIC) ? compoundnbt.getInt("paint") : 0;
-    }
 
-    /**
-     * Sets the amount of paint for the specified stack.
-     *
-     * @param stack The stack to set the paint amount for
-     * @param paint The new amount of paint for the stack
-     */
-    public void setPaint(ItemStack stack, int paint)
+    @Override
+    public BrushSize getBrush(ItemStack stack)
     {
-        stack.getOrCreateTag().putInt("paint", paint);
+        return brushSize;
     }
 }

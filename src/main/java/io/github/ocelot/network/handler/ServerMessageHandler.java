@@ -1,9 +1,6 @@
 package io.github.ocelot.network.handler;
 
-import io.github.ocelot.network.AddPaintingMessage;
-import io.github.ocelot.network.RemovePaintingMessage;
-import io.github.ocelot.network.SpawnWorldPaintingMessage;
-import io.github.ocelot.network.SyncPaintingsMessage;
+import io.github.ocelot.network.*;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -28,18 +25,24 @@ public class ServerMessageHandler implements MessageHandler
     @Override
     public void handleSyncPaintingsMessage(SyncPaintingsMessage msg, Supplier<NetworkEvent.Context> ctx)
     {
-        throw new UnsupportedOperationException("Server cannot be told to sync paintings.");
+        throw new UnsupportedOperationException("Server cannot be told to sync world paintings.");
+    }
+
+    @Override
+    public void handleSyncPaintingMessage(SyncPaintingMessage msg, Supplier<NetworkEvent.Context> ctx)
+    {
+        throw new UnsupportedOperationException("Server cannot be told to sync world paintings.");
     }
 
     @Override
     public void handleAddPaintingMessage(AddPaintingMessage msg, Supplier<NetworkEvent.Context> ctx)
     {
-        throw new UnsupportedOperationException("Server cannot be told to add paintings.");
+        throw new UnsupportedOperationException("Server cannot be told to add world paintings.");
     }
 
     @Override
     public void handleRemovePaintingMessage(RemovePaintingMessage msg, Supplier<NetworkEvent.Context> ctx)
     {
-        throw new UnsupportedOperationException("Server cannot be told to remove paintings.");
+        throw new UnsupportedOperationException("Server cannot be told to remove world paintings.");
     }
 }

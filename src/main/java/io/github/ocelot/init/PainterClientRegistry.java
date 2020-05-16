@@ -2,19 +2,16 @@ package io.github.ocelot.init;
 
 import io.github.ocelot.WorldPainter;
 import io.github.ocelot.dimension.PaintedLeavesColor;
-import io.github.ocelot.entity.render.AfroLayer;
 import io.github.ocelot.entity.render.WorldPaintingEntityRenderer;
 import io.github.ocelot.item.PaintDyeable;
 import io.github.ocelot.tileentity.PaintBucketTileEntity;
 import io.github.ocelot.tileentity.renderer.EaselTileEntityRenderer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ColorCache;
 import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.client.renderer.entity.PlayerRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.Item;
 import net.minecraft.world.level.ColorResolver;
@@ -55,11 +52,6 @@ public class PainterClientRegistry
         RenderTypeLookup.setRenderLayer(PainterBlocks.PAINTED_LEAVES.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(PainterBlocks.PAINT_BUCKET.get(), RenderType.getCutout());
         MinecraftForge.EVENT_BUS.register(PainterClientRegistry.class);
-
-        for (PlayerRenderer render : Minecraft.getInstance().getRenderManager().getSkinMap().values())
-        {
-            render.addLayer(new AfroLayer(render));
-        }
     }
 
     @SuppressWarnings("unchecked")

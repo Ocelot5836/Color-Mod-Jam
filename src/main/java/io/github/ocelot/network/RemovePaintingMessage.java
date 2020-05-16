@@ -6,6 +6,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.UUID;
 
+/**
+ * @author Ocelot
+ */
 public class RemovePaintingMessage
 {
     private final UUID id;

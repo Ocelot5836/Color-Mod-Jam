@@ -1,5 +1,7 @@
 package io.github.ocelot.painting;
 
+import io.github.ocelot.painting.render.WorldPaintingTextureCache;
+
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,6 +57,12 @@ public class ClientPaintingManager implements PaintingManager
     {
         this.paintings.clear();
         paintings.forEach(painting -> this.paintings.put(painting.getId(), painting));
+    }
+
+    public void receivePainting(Painting painting)
+    {
+        this.paintings.put(painting.getId(), painting);
+        WorldPaintingTextureCache.updateTexture(painting);
     }
 
     public void receiveAddPainting(Painting painting)

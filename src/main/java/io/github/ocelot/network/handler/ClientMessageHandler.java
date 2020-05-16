@@ -1,10 +1,7 @@
 package io.github.ocelot.network.handler;
 
 import io.github.ocelot.entity.WorldPaintingEntity;
-import io.github.ocelot.network.AddPaintingMessage;
-import io.github.ocelot.network.RemovePaintingMessage;
-import io.github.ocelot.network.SpawnWorldPaintingMessage;
-import io.github.ocelot.network.SyncPaintingsMessage;
+import io.github.ocelot.network.*;
 import io.github.ocelot.painting.ClientPaintingManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.world.ClientWorld;
@@ -44,6 +41,13 @@ public class ClientMessageHandler implements MessageHandler
     public void handleSyncPaintingsMessage(SyncPaintingsMessage msg, Supplier<NetworkEvent.Context> ctx)
     {
         ctx.get().enqueueWork(() -> ClientPaintingManager.INSTANCE.receivePaintings(msg.getPaintings()));
+        ctx.get().setPacketHandled(true);
+    }
+
+    @Override
+    public void handleSyncPaintingMessage(SyncPaintingMessage msg, Supplier<NetworkEvent.Context> ctx)
+    {
+        ctx.get().enqueueWork(() -> ClientPaintingManager.INSTANCE.receivePainting(msg.getPainting()));
         ctx.get().setPacketHandled(true);
     }
 

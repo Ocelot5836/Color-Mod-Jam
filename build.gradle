@@ -154,7 +154,7 @@ processResources {
 
 shadowJar {
     configurations = [project.configurations.shade]
-    relocate 'io.github.ocelot', 'io.github.ocelot'
+    relocate 'io.github.ocelot', 'io.github.ocelot.lib'
 }
 
 reobf {

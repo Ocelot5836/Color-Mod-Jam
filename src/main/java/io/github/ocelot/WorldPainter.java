@@ -1,7 +1,6 @@
 package io.github.ocelot;
 
 import io.github.ocelot.init.*;
-import io.github.ocelot.item.PaintDyeable;
 import io.github.ocelot.network.SyncPaintingsMessage;
 import io.github.ocelot.painting.PaintingManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,7 +8,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.RegisterDimensionsEvent;
@@ -40,9 +38,9 @@ public class WorldPainter
         @Override
         public ItemStack createIcon()
         {
-            ItemStack stack = new ItemStack(PainterItems.PAINT_BRUSH.get());
-            PainterItems.PAINT_BRUSH.get().setColor(stack, 0xFF00FF); // Yes
-            PainterItems.PAINT_BRUSH.get().setPaint(stack, PaintDyeable.MAX_PAINT);
+            ItemStack stack = new ItemStack(PainterItems.SMALL_PAINT_BRUSH.get());
+            PainterItems.SMALL_PAINT_BRUSH.get().setColor(stack, 0xFF00FF); // Yes
+            PainterItems.SMALL_PAINT_BRUSH.get().setPaint(stack, PainterItems.SMALL_PAINT_BRUSH.get().getBrush(stack).getMaxPaint());
             return stack;
         }
     };
@@ -83,8 +81,8 @@ public class WorldPainter
     @SubscribeEvent
     public void onEvent(RegisterDimensionsEvent event)
     {
-        DimensionManager.registerOrGetDimension(PainterDimensions.PAINTED_DIMENSION.getId(), PainterDimensions.PAINTED_DIMENSION.get(), null, true);
-        DimensionManager.registerOrGetDimension(PainterDimensions.PLAID_DIMENSION.getId(), PainterDimensions.PLAID_DIMENSION.get(), null, true);
+        PainterDimensions.getDimensionType(PainterDimensions.PAINTED_DIMENSION.get());
+        PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get());
     }
 
     @SubscribeEvent

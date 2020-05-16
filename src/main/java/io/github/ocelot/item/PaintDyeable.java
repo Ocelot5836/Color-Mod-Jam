@@ -12,8 +12,6 @@ import net.minecraftforge.common.util.Constants;
  */
 public interface PaintDyeable
 {
-    int MAX_PAINT = 64;
-
     /**
      * Checks whether or not the specified stack has any color.
      *
@@ -62,5 +60,4 @@ public interface PaintDyeable
     {
         stack.getOrCreateChildTag("display").putInt("color", color);
     }
-
 }

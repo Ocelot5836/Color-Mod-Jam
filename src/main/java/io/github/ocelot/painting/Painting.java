@@ -1,5 +1,6 @@
 package io.github.ocelot.painting;
 
+import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,6 +36,7 @@ public class Painting
     private UUID id;
     private boolean hasBorder;
     private int index;
+    private PaintingManagerSavedData paintingManager;
 
     private Painting(int[] pixels, UUID id, boolean hasBorder)
     {
@@ -46,7 +48,7 @@ public class Painting
         else
         {
             this.pixels = new int[SIZE * SIZE];
-            Arrays.fill(this.pixels, 0xFFFFFF);
+            Arrays.fill(this.pixels, DyeColor.WHITE.getColorValue());
         }
         this.id = id;
         this.hasBorder = hasBorder;
@@ -56,9 +58,18 @@ public class Painting
     public Painting()
     {
         this.pixels = new int[SIZE * SIZE];
-        Arrays.fill(this.pixels, 0xFFFFFF);
+        Arrays.fill(this.pixels, DyeColor.WHITE.getColorValue());
         this.id = UUID.randomUUID();
         this.hasBorder = false;
+        this.index = -1;
+    }
+
+    public Painting(Painting parent)
+    {
+        this.pixels = new int[SIZE * SIZE];
+        System.arraycopy(parent.pixels, 0, this.pixels, 0, parent.pixels.length);
+        this.id = UUID.randomUUID();
+        this.hasBorder = parent.hasBorder;
         this.index = -1;
     }
 
@@ -73,11 +84,16 @@ public class Painting
         else
         {
             this.pixels = new int[SIZE * SIZE];
-            Arrays.fill(this.pixels, 0xFFFFFF);
+            Arrays.fill(this.pixels, DyeColor.WHITE.getColorValue());
         }
         this.id = nbt.hasUniqueId("id") ? nbt.getUniqueId("id") : UUID.randomUUID();
         this.hasBorder = nbt.getBoolean("hasBorder");
         this.index = nbt.getInt("index");
+    }
+
+    protected void setPaintingManager(PaintingManagerSavedData paintingManager)
+    {
+        this.paintingManager = paintingManager;
     }
 
     /**
@@ -91,11 +107,15 @@ public class Painting
      */
     public void fill(int x, int y, int width, int height, int color)
     {
-        if (width <= 0 || height <= 0 || !checkBounds(x, y) || !checkBounds(x + width, y + height))
+        if (x + width < 0 || x >= SIZE || y + height < 0 || y >= SIZE)
             return;
+        boolean boundsCheck = width <= 0 || height <= 0 || !checkBounds(x, y) || !checkBounds(x + width, y + height);
         for (int xp = 0; xp < width; xp++)
             for (int yp = 0; yp < height; yp++)
-                this.pixels[(x + xp) + (y + yp) * SIZE] = color;
+                if (!boundsCheck || checkBounds(x + xp, y + yp))
+                    this.pixels[(x + xp) + (y + yp) * SIZE] = color;
+        if (this.paintingManager != null)
+            this.paintingManager.sync(this);
     }
 
     /**
@@ -110,6 +130,8 @@ public class Painting
         if (!checkBounds(x, y))
             return;
         this.pixels[x + y * SIZE] = color;
+        if (this.paintingManager != null)
+            this.paintingManager.sync(this);
     }
 
     /**
@@ -119,10 +141,12 @@ public class Painting
     {
         if (this != PLAD_PAINTING)
             this.id = UUID.randomUUID();
+        if (this.paintingManager != null)
+            this.paintingManager.sync(this);
     }
 
     /**
-     * Checks the image for the pixel at the specified position or <code>0xFFFFFF</code> if the position is out of bounds.
+     * Checks the image for the pixel at the specified position or <code>0x000000</code> if the position is out of bounds.
      *
      * @param x The x position to fetch
      * @param y The y position to fetch
@@ -181,6 +205,8 @@ public class Painting
     public void setHasBorder(boolean hasBorder)
     {
         this.hasBorder = hasBorder;
+        if (this.paintingManager != null)
+            this.paintingManager.sync(this);
     }
 
     /**
@@ -191,6 +217,8 @@ public class Painting
     public void setIndex(int index)
     {
         this.index = index;
+        if (this.paintingManager != null)
+            this.paintingManager.sync(this);
     }
 
     /**

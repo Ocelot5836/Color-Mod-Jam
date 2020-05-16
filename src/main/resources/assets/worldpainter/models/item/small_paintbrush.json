@@ -1,0 +1,7 @@
+{
+	"parent": "item/handheld",
+	"textures": {
+		"layer0": "worldpainter:item/paintbrush",
+		"layer1": "worldpainter:item/small_paintbrush_overlay"
+	}
+}

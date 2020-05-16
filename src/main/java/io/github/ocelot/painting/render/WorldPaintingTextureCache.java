@@ -6,6 +6,7 @@ import io.github.ocelot.painting.Painting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.NativeImage;
+import net.minecraft.client.renderer.texture.Texture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -21,6 +22,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * <p>Manages the textures of {@link Painting} being rendered with</p>
@@ -39,21 +41,59 @@ public class WorldPaintingTextureCache
     public static final ResourceLocation BORDER = new ResourceLocation(WorldPainter.MOD_ID, "textures/painting/world_painting_border.png");
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Map<Integer, MutablePair<ResourceLocation, Long>> CACHE = new HashMap<>();
+    private static final Map<UUID, MutablePair<ResourceLocation, Long>> CACHE = new HashMap<>();
 
-    private static MutablePair<ResourceLocation, Long> generateTexture(Painting painting)
+//    private static MutablePair<ResourceLocation, Long> generateTexture(Painting painting)
+//    {
+//        TextureManager textureManager = Minecraft.getInstance().getTextureManager();
+//        NativeImage image = new NativeImage(Painting.SIZE, Painting.SIZE, true);
+//        for (int y = 0; y < Painting.SIZE; y++)
+//            for (int x = 0; x < Painting.SIZE; x++)
+//                image.setPixelRGBA(x, y, painting.getPixel(x, y));
+//        ResourceLocation location = textureManager.getDynamicTextureLocation("world_painting", new DynamicTexture(image));
+//
+//
+//        return new MutablePair<>(location, System.currentTimeMillis());
+//    }
+
+    @Nullable
+    private static DynamicTexture getTexture(UUID id)
     {
-        TextureManager textureManager = Minecraft.getInstance().getTextureManager();
-        textureManager.bindTexture(BORDER);
-        NativeImage image = new NativeImage(Painting.SIZE, Painting.SIZE, true);
-        for (int y = 0; y < Painting.SIZE; y++)
-            for (int x = 0; x < Painting.SIZE; x++)
-                image.setPixelRGBA(x, y, painting.getPixel(x, y));
-        ResourceLocation location = textureManager.getDynamicTextureLocation("world_painting", new DynamicTexture(image));
-        return new MutablePair<>(location, System.currentTimeMillis());
+        if (!CACHE.containsKey(id))
+            return null;
+        ResourceLocation location = CACHE.get(id).getLeft();
+        Texture texture = Minecraft.getInstance().getTextureManager().getTexture(location);
+        if (!(texture instanceof DynamicTexture))
+            return null;
+        return (DynamicTexture) texture;
     }
 
-    private static void deleteTexture(int key)
+    private static MutablePair<ResourceLocation, Long> fillTexture(Painting painting)
+    {
+        TextureManager textureManager = Minecraft.getInstance().getTextureManager();
+
+        DynamicTexture texture = getTexture(painting.getId());
+        if (texture == null || texture.getTextureData() == null)
+        {
+            deleteTexture(painting.getId());
+            texture = new DynamicTexture(new NativeImage(Painting.SIZE, Painting.SIZE, true));
+            CACHE.put(painting.getId(), new MutablePair<>(textureManager.getDynamicTextureLocation("world_painting", texture), System.currentTimeMillis()));
+        }
+
+        NativeImage image = Objects.requireNonNull(texture.getTextureData());
+        for (int y = 0; y < Painting.SIZE; y++)
+        {
+            for (int x = 0; x < Painting.SIZE; x++)
+            {
+                int color = painting.getPixel(x, y);
+                image.setPixelRGBA(x, y, 0xFF000000 | ((color & 0xff) << 16) | (((color >> 8) & 0xFF) << 8) | ((color >> 16) & 0xFF));
+            }
+        }
+        texture.updateDynamicTexture();
+        return CACHE.get(painting.getId());
+    }
+
+    private static void deleteTexture(UUID key)
     {
         if (CACHE.containsKey(key))
         {
@@ -67,13 +107,23 @@ public class WorldPaintingTextureCache
     public static void onEvent(TickEvent.ClientTickEvent event)
     {
         long now = System.currentTimeMillis();
-        for (Map.Entry<Integer, MutablePair<ResourceLocation, Long>> entry : CACHE.entrySet())
+        for (Map.Entry<UUID, MutablePair<ResourceLocation, Long>> entry : CACHE.entrySet())
         {
             if (now - entry.getValue().getRight() >= CACHE_TIME)
             {
                 RenderSystem.recordRenderCall(() -> deleteTexture(entry.getKey()));
             }
         }
+    }
+
+    /**
+     * Refills the texture for the specified painting.
+     *
+     * @param painting The painting to update
+     */
+    public static void updateTexture(Painting painting)
+    {
+        fillTexture(painting);
     }
 
     /**
@@ -86,9 +136,11 @@ public class WorldPaintingTextureCache
     {
         if (painting == null)
             return MISSING;
-        int id = Objects.hash(painting, painting.hasBorder());
+        UUID id = painting.getId();
         if (CACHE.containsKey(id))
             CACHE.get(id).setRight(System.currentTimeMillis());
-        return CACHE.computeIfAbsent(id, key -> generateTexture(painting)).getLeft();
+        if (!CACHE.containsKey(id))
+            fillTexture(painting);
+        return CACHE.get(id).getLeft();
     }
 }

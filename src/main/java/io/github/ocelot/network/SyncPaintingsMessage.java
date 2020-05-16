@@ -13,6 +13,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @author Ocelot
+ */
 public class SyncPaintingsMessage
 {
     private final Collection<Painting> paintings;

@@ -2,6 +2,6 @@
 	"parent": "item/handheld",
 	"textures": {
 		"layer0": "worldpainter:item/paintbrush",
-		"layer1": "worldpainter:item/paintbrush_overlay"
+		"layer1": "worldpainter:item/large_paintbrush_overlay"
 	}
 }
