@@ -66,9 +66,6 @@ public class PaintbrushItem extends Item implements Paintbrush
             {
                 if (!world.isRemote())
                 {
-                    if(!player.isCreative()){
-
-                    }
                     this.setColor(stack, color);
                     this.setPaint(stack, this.getBrush(stack).getMaxPaint());
                     world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, SoundCategory.PLAYERS, 0.1F, 2.0F);
@@ -88,7 +85,6 @@ public class PaintbrushItem extends Item implements Paintbrush
                     world.setBlockState(pos, state.with(CauldronBlock.LEVEL, level - 1));
                     if (player != null && !player.isCreative())
                         player.addStat(PainterStats.CLEAN_PAINT_BRUSH);
-                    world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, SoundCategory.PLAYERS, 0.1F, 2.0F);
                 }
                 return ActionResultType.SUCCESS;
             }

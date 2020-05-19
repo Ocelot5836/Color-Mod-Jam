@@ -260,4 +260,5 @@ public class Painting
     {
         return x >= 0 && x < SIZE && y >= 0 && y < SIZE;
     }
+
 }

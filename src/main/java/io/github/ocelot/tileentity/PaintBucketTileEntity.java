@@ -47,6 +47,8 @@ public class PaintBucketTileEntity extends TileEntity
     {
         this.color = color;
         this.markDirty();
+        if (this.world != null)
+            this.world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT);
     }
 
     @Override

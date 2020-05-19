@@ -8,13 +8,11 @@ buildscript {
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
         classpath "com.github.jengelman.gradle.plugins:shadow:5.2.0"
-        classpath "com.wynprice.cursemaven:CurseMaven:2.1.1"
     }
 }
 
 plugins {
     id 'com.github.johnrengelman.shadow' version '5.2.0'
-    id 'com.wynprice.cursemaven' version '2.1.1'
 }
 
 apply plugin: 'net.minecraftforge.gradle'
@@ -116,12 +114,12 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${project.minecraft}-${project.forge}"
 
-    compileOnly fg.deobf("com.github.Ocelot5836:FishLib:${project.minecraft}-${project.fishLib}:api")
-    runtimeOnly fg.deobf("com.github.Ocelot5836:FishLib:${project.minecraft}-${project.fishLib}")
-    shade "com.github.Ocelot5836:FishLib:${project.minecraft}-${project.fishLib}"
+    runtimeOnly fg.deobf("com.github.Ocelot5836:FishLib:${project.fishLib}")
+    compileOnly fg.deobf("com.github.Ocelot5836:FishLib:${project.fishLib}:api")
+    shade "com.github.Ocelot5836:FishLib:${project.fishLib}"
 
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-${project.minecraft}-${project.curios}")
-    compileOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-${project.minecraft}-${project.curios}:api")
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-${project.curios}")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-${project.curios}:api")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

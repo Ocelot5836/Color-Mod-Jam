@@ -36,6 +36,7 @@ import java.util.UUID;
 public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
 {
     private UUID paintingId;
+    private boolean teleportation;
 
     public WorldPaintingEntity(EntityType<WorldPaintingEntity> entityType, World world)
     {
@@ -69,6 +70,7 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
     {
         super.writeAdditional(nbt);
         this.serializePainting(nbt);
+        nbt.putBoolean("teleportation", this.teleportation);
     }
 
     @Override
@@ -76,6 +78,7 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
     {
         super.readAdditional(nbt);
         this.paintingId = this.deserializePainting(nbt);
+        this.teleportation = nbt.getBoolean("teleportation");
     }
 
     @Override
@@ -131,19 +134,18 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
     @Override
     public void onCollideWithPlayer(PlayerEntity player)
     {
-        if (!this.world.isRemote() && this.paintingId != null && PaintingManager.get(this.world).hasPainting(this.paintingId))
+        if (!this.world.isRemote() && this.teleportation && this.paintingId != null && PaintingManager.get(this.world).hasPainting(this.paintingId))
         {
             if (this.world.getDimension().getType() == DimensionType.OVERWORLD)
             {
-                if (FixedPaintingType.isFixed(this.paintingId))
+                if (this.paintingId.equals(FixedPaintingType.PLAID.getPainting().getId()))
                 {
                     player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()), new PladTeleporter());
-                    return;
                 }
             }
             else if (this.world.getDimension().getType() == PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()))
             {
-                if (FixedPaintingType.isFixed(this.paintingId))
+                if (this.paintingId.equals(FixedPaintingType.PLAID.getPainting().getId()))
                 {
                     player.changeDimension(DimensionType.OVERWORLD, new PladTeleporter());
                 }

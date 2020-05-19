@@ -1,5 +1,8 @@
 package io.github.ocelot.painting;
 
+import io.github.ocelot.WorldPainter;
+
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -9,13 +12,15 @@ import java.util.UUID;
  */
 public enum FixedPaintingType
 {
-    PLAID(UUID.fromString("56208243-31d3-4438-a9d1-20b10bda1314"), getPlaid());
+    PLAID(UUID.fromString("56208243-31d3-4438-a9d1-20b10bda1314"), getPlaid(), true);
 
     private final Painting painting;
+    private final boolean teleportation;
 
-    FixedPaintingType(UUID id, int[] pixels)
+    FixedPaintingType(UUID id, int[] pixels, boolean teleportation)
     {
         this.painting = new Painting(pixels, id, true);
+        this.teleportation = teleportation;
     }
 
     /**
@@ -24,6 +29,22 @@ public enum FixedPaintingType
     public Painting getPainting()
     {
         return painting;
+    }
+
+    /**
+     * @return Whether or not this painting is a teleportation painting
+     */
+    public boolean isTeleportation()
+    {
+        return teleportation;
+    }
+
+    /**
+     * @return The unlocalized name of this special painting type
+     */
+    public String getTranslationKey()
+    {
+        return "item." + WorldPainter.MOD_ID + ".fixed_painting." + this.name().toLowerCase(Locale.ROOT);
     }
 
     private static int[] getPlaid()
@@ -47,10 +68,21 @@ public enum FixedPaintingType
      */
     public static Painting get(UUID id)
     {
+        return getType(id).getPainting();
+    }
+
+    /**
+     * Fetches the specified painting type.
+     *
+     * @param id The id of the painting type to get
+     * @return The painting type of that type or {@code PLAID} if the id is invalid
+     */
+    public static FixedPaintingType getType(UUID id)
+    {
         for (FixedPaintingType paintingType : values())
             if (paintingType.getPainting().getId().equals(id))
-                return paintingType.getPainting();
-        return PLAID.getPainting();
+                return paintingType;
+        return PLAID;
     }
 
     /**

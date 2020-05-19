@@ -14,6 +14,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -23,22 +24,42 @@ import java.util.UUID;
  */
 public class WorldPaintingItem extends HangingEntityItem
 {
-    public WorldPaintingItem(Properties properties)
+    private final boolean teleporation;
+
+    public WorldPaintingItem(boolean teleporation, Properties properties)
     {
         super(EntityType.PAINTING, properties);
+        this.teleporation = teleporation;
+    }
+
+    @Override
+    public String getTranslationKey(ItemStack stack)
+    {
+        if (this.hasPainting(stack))
+        {
+            UUID paintingId = this.getPaintingId(stack);
+            if (FixedPaintingType.isFixed(paintingId))
+                return FixedPaintingType.getType(paintingId).getTranslationKey();
+        }
+        return super.getTranslationKey(stack);
     }
 
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items)
     {
-        super.fillItemGroup(group, items);
+        if (!this.teleporation)
+            super.fillItemGroup(group, items);
         if (this.isInGroup(group))
         {
             for (FixedPaintingType type : FixedPaintingType.values())
             {
-                ItemStack stack = new ItemStack(this);
-                this.setPainting(stack, type.getPainting().getId());
-                items.add(stack);
+                if (type.isTeleportation() == this.teleporation)
+                {
+                    ItemStack stack = new ItemStack(this);
+                    this.setPainting(stack, type.getPainting().getId());
+                    this.setTeleportation(stack, this.teleporation);
+                    items.add(stack);
+                }
             }
         }
     }
@@ -53,8 +74,7 @@ public class WorldPaintingItem extends HangingEntityItem
         if (playerentity != null && !this.canPlace(playerentity, direction, itemstack, blockpos1))
         {
             return ActionResultType.FAIL;
-        }
-        else
+        } else
         {
             World world = context.getWorld();
             WorldPaintingEntity hangingentity = new WorldPaintingEntity(world, blockpos1, direction);
@@ -75,23 +95,22 @@ public class WorldPaintingItem extends HangingEntityItem
 
                 itemstack.shrink(1);
                 return ActionResultType.SUCCESS;
-            }
-            else
+            } else
             {
                 return ActionResultType.CONSUME;
             }
         }
     }
 
-    public void setPainting(ItemStack stack, UUID paintingId)
-    {
-        stack.getOrCreateChildTag("EntityTag").putUniqueId("paintingId", paintingId);
-    }
-
     public boolean hasPainting(ItemStack stack)
     {
         CompoundNBT compoundnbt = stack.getChildTag("EntityTag");
         return compoundnbt != null && compoundnbt.hasUniqueId("paintingId");
+    }
+
+    public void setPainting(ItemStack stack, UUID paintingId)
+    {
+        stack.getOrCreateChildTag("EntityTag").putUniqueId("paintingId", paintingId);
     }
 
     @Nullable
@@ -101,12 +120,20 @@ public class WorldPaintingItem extends HangingEntityItem
         return compoundnbt != null && compoundnbt.hasUniqueId("paintingId") ? compoundnbt.getUniqueId("paintingId") : null;
     }
 
-    public void removePainting(ItemStack stack)
+    public boolean hasTeleportation(ItemStack stack)
     {
         CompoundNBT compoundnbt = stack.getChildTag("EntityTag");
-        if (compoundnbt != null && compoundnbt.hasUniqueId("color"))
-        {
-            compoundnbt.removeUniqueId("color");
-        }
+        return compoundnbt != null && compoundnbt.contains("teleportation", Constants.NBT.TAG_BYTE);
+    }
+
+    public void setTeleportation(ItemStack stack, boolean teleportation)
+    {
+        stack.getOrCreateChildTag("EntityTag").putBoolean("teleportation", teleportation);
+    }
+
+    public boolean getTeleportation(ItemStack stack)
+    {
+        CompoundNBT compoundnbt = stack.getChildTag("EntityTag");
+        return compoundnbt != null && compoundnbt.hasUniqueId("teleportation") && compoundnbt.getBoolean("teleportation");
     }
 }

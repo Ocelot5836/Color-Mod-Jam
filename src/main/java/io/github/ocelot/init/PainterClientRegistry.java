@@ -2,6 +2,7 @@ package io.github.ocelot.init;
 
 import io.github.ocelot.WorldPainter;
 import io.github.ocelot.dimension.PaintedLeavesColor;
+import io.github.ocelot.entity.render.BobRossEntityRenderer;
 import io.github.ocelot.entity.render.WorldPaintingEntityRenderer;
 import io.github.ocelot.item.PaintDyeable;
 import io.github.ocelot.tileentity.PaintBucketTileEntity;
@@ -48,6 +49,7 @@ public class PainterClientRegistry
     {
         ClientRegistry.bindTileEntityRenderer(PainterBlocks.EASEL_TE.get(), EaselTileEntityRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(PainterEntities.WORLD_PAINTING.get(), WorldPaintingEntityRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(PainterEntities.BOB_ROSS.get(), BobRossEntityRenderer::new);
 
         RenderTypeLookup.setRenderLayer(PainterBlocks.PAINTED_LEAVES.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(PainterBlocks.PAINT_BUCKET.get(), RenderType.getCutout());

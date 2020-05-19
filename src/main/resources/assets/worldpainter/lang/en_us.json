@@ -10,8 +10,11 @@
 	"item.worldpainter.paintbrush.brush.small": "Small",
 	"item.worldpainter.paintbrush.brush.medium": "Medium",
 	"item.worldpainter.paintbrush.brush.large": "Large",
-	"item.worldpainter.world_painting": "Teleportation Painting",
+	"item.worldpainter.world_painting": "Custom Painting",
+	"item.worldpainter.teleportation_painting": "Teleportation Painting",
+	"item.worldpainter.fixed_painting.plaid": "Plaid Painting",
 	"item.worldpainter.afro": "Bob Ross's Afro",
+	"item.worldpainter.bob_ross_spawn_egg": "Spawn Bob Ross",
 
 	"block.worldpainter.painted_leaves": "Painted Leaves",
 	"block.worldpainter.paint_bucket": "Paint Bucket",
