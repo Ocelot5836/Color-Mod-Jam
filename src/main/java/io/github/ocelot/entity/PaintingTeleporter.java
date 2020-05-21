@@ -32,7 +32,7 @@ public class PaintingTeleporter implements ITeleporter
             {
                 if (destWorld.isAirBlock(spawnPos.setPos(pos.getX(), y, pos.getZ())))
                 {
-                    entity.setLocationAndAngles(pos.getX() + 0.5, y, pos.getZ() + 0.5, yaw, entity.rotationPitch);
+                    entity.setLocationAndAngles(pos.getX() + 0.5, y, pos.getZ() + 0.5, -45, 0);
                     break;
                 }
             }

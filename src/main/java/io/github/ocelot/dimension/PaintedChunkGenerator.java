@@ -25,6 +25,9 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * @author Ocelot
+ */
 public class PaintedChunkGenerator extends ChunkGenerator<FlatGenerationSettings>
 {
     public PaintedChunkGenerator(IWorld world, BiomeProvider biomeProvider, FlatGenerationSettings generationSettings)
@@ -32,9 +35,9 @@ public class PaintedChunkGenerator extends ChunkGenerator<FlatGenerationSettings
         super(world, biomeProvider, generationSettings);
     }
 
+    // TODO add flat color blocks
     private void generateBlocks(int[] pixels, IChunk chunk, int xOffset, int zOffset)
     {
-        // TODO generate in biome when chunks generate
         int[] heights = new int[Painting.SIZE];
         Arrays.fill(heights, 0);
         for (int x = 0; x < Painting.SIZE; x++)
