@@ -26,7 +26,7 @@ public class WorldPaintingEntityRenderer extends EntityRenderer<WorldPaintingEnt
         stack.push();
         stack.rotate(Vector3f.YP.rotationDegrees(180.0F - entityYaw));
         stack.scale(0.0625F, 0.0625F, 0.0625F);
-        WorldPaintingRenderer.renderPainting(stack, buffer, entity.getPainting(), true, packedLight);
+        WorldPaintingRenderer.renderPainting(stack, buffer, entity.getPainting(), true, entity.isTeleportation(), packedLight);
         stack.pop();
         super.render(entity, entityYaw, partialTicks, stack, buffer, packedLight);
     }

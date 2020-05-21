@@ -57,16 +57,6 @@ public class EaselTileEntity extends TileEntity implements PaintingHolder, ISide
         return paintingId;
     }
 
-    public void addNewPainting()
-    {
-        if (this.world != null)
-        {
-            Painting painting = new Painting();
-            PaintingManager.get(this.world).addPainting(painting);
-            this.setPainting(painting.getId());
-        }
-    }
-
     @Override
     public void setPainting(@Nullable UUID paintingId)
     {

@@ -8,7 +8,7 @@ import io.github.ocelot.tileentity.EaselTileEntity;
 import io.github.ocelot.tileentity.PaintBucketTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.LeavesBlock;
+import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
@@ -29,8 +29,8 @@ public class PainterBlocks
     public static final DeferredRegister<Block> BLOCKS = new DeferredRegister<>(ForgeRegistries.BLOCKS, WorldPainter.MOD_ID);
     public static final DeferredRegister<TileEntityType<?>> TILE_ENTTIES = new DeferredRegister<>(ForgeRegistries.TILE_ENTITIES, WorldPainter.MOD_ID);
 
-    public static final RegistryObject<LeavesBlock> PAINTED_LEAVES = register("painted_leaves", () -> new LeavesBlock(Block.Properties.from(Blocks.OAK_LEAVES)), new Item.Properties().group(WorldPainter.TAB));
-    public static final RegistryObject<PaintBucketBlock> PAINT_BUCKET = register("paint_bucket", PaintBucketBlock::new, object -> new PaintBucketItem(object.get(), new Item.Properties().group(WorldPainter.TAB)));
+//    public static final RegistryObject<LeavesBlock> PAINTED_LEAVES = register("painted_leaves", () -> new LeavesBlock(Block.Properties.from(Blocks.OAK_LEAVES)), new Item.Properties().group(WorldPainter.TAB));
+    public static final RegistryObject<PaintBucketBlock> PAINT_BUCKET = register("paint_bucket", () -> new PaintBucketBlock(Block.Properties.create(Material.MISCELLANEOUS).hardnessAndResistance(1.0F)), object -> new PaintBucketItem(object.get(), new Item.Properties().group(WorldPainter.TAB)));
     public static final RegistryObject<EaselBlock> OAK_EASEL = register("oak_easel", () -> new EaselBlock(Block.Properties.from(Blocks.OAK_LOG).variableOpacity().notSolid()), new Item.Properties().group(WorldPainter.TAB));
     public static final RegistryObject<EaselBlock> SPRUCE_EASEL = register("spruce_easel", () -> new EaselBlock(Block.Properties.from(Blocks.SPRUCE_LOG).variableOpacity().notSolid()), new Item.Properties().group(WorldPainter.TAB));
     public static final RegistryObject<EaselBlock> BIRCH_EASEL = register("birch_easel", () -> new EaselBlock(Block.Properties.from(Blocks.BIRCH_LOG).variableOpacity().notSolid()), new Item.Properties().group(WorldPainter.TAB));

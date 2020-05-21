@@ -40,7 +40,7 @@ public class ClientMessageHandler implements MessageHandler
     @Override
     public void handleSyncPaintingsMessage(SyncPaintingsMessage msg, Supplier<NetworkEvent.Context> ctx)
     {
-        ctx.get().enqueueWork(() -> ClientPaintingManager.INSTANCE.receivePaintings(msg.getPaintings()));
+        ctx.get().enqueueWork(() -> ClientPaintingManager.INSTANCE.receivePaintings(msg.getIndex(), msg.getPaintings()));
         ctx.get().setPacketHandled(true);
     }
 
@@ -62,6 +62,20 @@ public class ClientMessageHandler implements MessageHandler
     public void handleRemovePaintingMessage(RemovePaintingMessage msg, Supplier<NetworkEvent.Context> ctx)
     {
         ctx.get().enqueueWork(() -> ClientPaintingManager.INSTANCE.receiveRemovePainting(msg.getId()));
+        ctx.get().setPacketHandled(true);
+    }
+
+    @Override
+    public void handleSyncPaintingRealmsMessage(SyncPaintingRealmsMessage msg, Supplier<NetworkEvent.Context> ctx)
+    {
+        ctx.get().enqueueWork(() -> ClientPaintingManager.INSTANCE.receivePaintingRealms(msg.getIndex(), msg.getPaintingRealmPositions()));
+        ctx.get().setPacketHandled(true);
+    }
+
+    @Override
+    public void handleAddPaintingRealmMessage(AddPaintingRealmMessage msg, Supplier<NetworkEvent.Context> ctx)
+    {
+        ctx.get().enqueueWork(() -> ClientPaintingManager.INSTANCE.receiveAddPaintingRealm(msg.getPaintingId(), msg.getRealmId()));
         ctx.get().setPacketHandled(true);
     }
 }

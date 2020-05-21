@@ -1,6 +1,7 @@
 package io.github.ocelot;
 
 import io.github.ocelot.init.*;
+import io.github.ocelot.network.SyncPaintingRealmsMessage;
 import io.github.ocelot.network.SyncPaintingsMessage;
 import io.github.ocelot.painting.PaintingManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -92,7 +93,8 @@ public class WorldPainter
         World world = playerEntity.world;
         if (!world.isRemote() && playerEntity instanceof ServerPlayerEntity)
         {
-            PainterMessages.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerEntity), new SyncPaintingsMessage(PaintingManager.get(world).getAllPaintings()));
+            SyncPaintingsMessage.sendTo(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerEntity), PaintingManager.get(world).getAllPaintings());
+            SyncPaintingRealmsMessage.sendTo(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerEntity), PaintingManager.get(world).getAllPaintingRealms());
         }
     }
 }

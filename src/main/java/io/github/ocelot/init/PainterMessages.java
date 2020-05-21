@@ -29,6 +29,8 @@ public class PainterMessages
         registerMessage(SyncPaintingMessage.class, SyncPaintingMessage::encode, SyncPaintingMessage::decode, (msg, ctx) -> getHandler(ctx).handleSyncPaintingMessage(msg, ctx));
         registerMessage(AddPaintingMessage.class, AddPaintingMessage::encode, AddPaintingMessage::decode, (msg, ctx) -> getHandler(ctx).handleAddPaintingMessage(msg, ctx));
         registerMessage(RemovePaintingMessage.class, RemovePaintingMessage::encode, RemovePaintingMessage::decode, (msg, ctx) -> getHandler(ctx).handleRemovePaintingMessage(msg, ctx));
+        registerMessage(SyncPaintingRealmsMessage.class, SyncPaintingRealmsMessage::encode, SyncPaintingRealmsMessage::decode, (msg, ctx) -> getHandler(ctx).handleSyncPaintingRealmsMessage(msg, ctx));
+        registerMessage(AddPaintingRealmMessage.class, AddPaintingRealmMessage::encode, AddPaintingRealmMessage::decode, (msg, ctx) -> getHandler(ctx).handleAddPaintingRealmMessage(msg, ctx));
     }
 
     private static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer)

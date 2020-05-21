@@ -2,13 +2,13 @@ package io.github.ocelot.painting;
 
 import io.github.ocelot.WorldPainter;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * <p>Manages all painting dimensions in the world.</p>
@@ -21,6 +21,19 @@ public interface PaintingManager
      * The name of the server side saved data.
      */
     String DATA_NAME = WorldPainter.MOD_ID + "_PaintingManager";
+
+    /**
+     * The distance in blocks between each painting realm.
+     */
+    int REALM_DISTANCE = 2048;
+
+    /**
+     * Initializes the realm of the specified painting.
+     *
+     * @param id The id of the painting to initialize
+     * @return Whether or not the realm exists to travel to
+     */
+    boolean initializeRealm(UUID id);
 
     /**
      * Adds the specified painting to the cache.
@@ -65,20 +78,36 @@ public interface PaintingManager
     Painting getPainting(UUID id);
 
     /**
+     * Fetches the spawn position of the specified painting if it exists.
+     *
+     * @param id The id of the painting
+     * @return The dimension start position of the painting with that id or null if there is no painting with that id
+     */
+    @Nullable
+    default BlockPos getPaintingStartPosition(UUID id)
+    {
+        if (!this.hasPainting(id))
+            return null;
+        int realmId = Arrays.hashCode(Objects.requireNonNull(this.getPainting(id)).getPixels());
+        if (!this.getAllPaintingRealms().containsKey(realmId))
+            return null;
+        return new BlockPos(this.getAllPaintingRealms().getOrDefault(realmId, 0) * REALM_DISTANCE, 63, 0);
+    }
+
+    @Nullable
+    UUID getRealmPainting(ChunkPos pos);
+
+    byte getRealmOffset(ChunkPos pos);
+
+    /**
      * @return A collection of every painting stored
      */
     Collection<Painting> getAllPaintings();
 
     /**
-     * Calculates the starting position of the specified dimension.
-     *
-     * @param dimension The dimension to get
-     * @return The position the specified dimension starts
+     * @return A collection of every painting realm stored
      */
-    static BlockPos getDimensionPos(int dimension)
-    {
-        return new BlockPos(dimension * 500, 63, 0);
-    }
+    Map<Integer, Integer> getAllPaintingRealms();
 
     /**
      * Checks the world for the painting manager for the world side.

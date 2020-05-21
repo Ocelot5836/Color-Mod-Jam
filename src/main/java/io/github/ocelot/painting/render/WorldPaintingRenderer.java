@@ -1,8 +1,11 @@
 package io.github.ocelot.painting.render;
 
+import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import io.github.ocelot.client.framebuffer.AdvancedFbo;
 import io.github.ocelot.painting.Painting;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Matrix3f;
@@ -11,12 +14,15 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.PaintingSpriteUploader;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.shader.ShaderGroup;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 
 /**
  * <p>Manages the rendering of {@link Painting} onto a painting frame.</p>
@@ -26,22 +32,55 @@ import javax.annotation.Nullable;
 @OnlyIn(Dist.CLIENT)
 public class WorldPaintingRenderer
 {
-    /**
-     * Renders the specified world painting.
-     *
-     * @param stack         The matrix stack
-     * @param buffer        The render buffers
-     * @param painting      The painting to draw or null for a blank image
-     * @param combinedLight The combined light of the painting
-     */
-    public static void renderPainting(MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, boolean renderBorder, int combinedLight)
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final ResourceLocation SHADER_LOCATION = new ResourceLocation("shaders/post/wobble.json");
+
+    private static AdvancedFbo fbo;
+    private static ShaderGroup rippleShader;
+    private static boolean useShader;
+    private static boolean drawing;
+
+    private static void createShader()
     {
-        PaintingSpriteUploader paintingspriteuploader = Minecraft.getInstance().getPaintingSpriteUploader();
-        TextureAtlasSprite backSprite = paintingspriteuploader.getBackSprite();
-        renderBackground(stack, buffer, painting, renderBorder, backSprite, combinedLight);
+        Minecraft minecraft = Minecraft.getInstance();
+        try
+        {
+            rippleShader = new ShaderGroup(minecraft.getTextureManager(), minecraft.getResourceManager(), fbo.getVanillaWrapper(), SHADER_LOCATION);
+            rippleShader.createBindFramebuffers(minecraft.getMainWindow().getFramebufferWidth(), minecraft.getMainWindow().getFramebufferHeight());
+            useShader = true;
+        }
+        catch (IOException | JsonSyntaxException e)
+        {
+            LOGGER.warn("Failed to load shader: {}", SHADER_LOCATION, e);
+            useShader = false;
+        }
     }
 
-    private static void renderBackground(MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, boolean renderBorder, TextureAtlasSprite backSprite, int combinedLight)
+    private static void updateFbo()
+    {
+        MainWindow window = Minecraft.getInstance().getMainWindow();
+        if (fbo == null)
+            fbo = createFbo(window.getFramebufferWidth(), window.getFramebufferHeight());
+
+        if (rippleShader == null)
+            createShader();
+
+        if (fbo.getWidth() != window.getFramebufferWidth() || fbo.getHeight() != window.getFramebufferHeight())
+        {
+            fbo.close();
+            fbo = createFbo(window.getFramebufferWidth(), window.getFramebufferHeight());
+            rippleShader.createBindFramebuffers(window.getFramebufferWidth(), window.getFramebufferHeight());
+        }
+    }
+
+    private static AdvancedFbo createFbo(int width, int height)
+    {
+        AdvancedFbo fbo = new AdvancedFbo.Builder(width, height).addColorTextureBuffer().setDepthRenderBuffer().build();
+        fbo.create();
+        return fbo;
+    }
+
+    private static void renderBackground(MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, boolean renderBorder, boolean renderEffects, TextureAtlasSprite backSprite, int combinedLight)
     {
         MatrixStack.Entry last = stack.getLast();
         Matrix4f matrix4f = last.getMatrix();
@@ -126,5 +165,23 @@ public class WorldPaintingRenderer
     private static void pos(Matrix4f matrix, Matrix3f normal, IVertexBuilder buffer, float x, float y, float u, float v, float z, int normalX, int normalY, int normalZ, int combinedLight)
     {
         buffer.pos(matrix, x, y, z).color(255, 255, 255, 255).tex(u, v).overlay(OverlayTexture.NO_OVERLAY).lightmap(combinedLight).normal(normal, (float) normalX, (float) normalY, (float) normalZ).endVertex();
+    }
+
+    /**
+     * Renders the specified world painting.
+     *
+     * @param stack         The matrix stack
+     * @param buffer        The render buffers
+     * @param painting      The painting to draw or null for a blank image
+     * @param renderBorder  Whether or not to draw a border on the painting
+     * @param renderEffects Whether or not to draw to the shader buffer
+     * @param combinedLight The combined light of the painting
+     */
+    public static void renderPainting(MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, boolean renderBorder, boolean renderEffects, int combinedLight)
+    {
+        PaintingSpriteUploader paintingspriteuploader = Minecraft.getInstance().getPaintingSpriteUploader();
+        TextureAtlasSprite backSprite = paintingspriteuploader.getBackSprite();
+        updateFbo();
+        renderBackground(stack, buffer, painting, renderBorder, renderEffects, backSprite, combinedLight);
     }
 }

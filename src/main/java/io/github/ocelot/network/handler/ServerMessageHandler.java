@@ -45,4 +45,16 @@ public class ServerMessageHandler implements MessageHandler
     {
         throw new UnsupportedOperationException("Server cannot be told to remove world paintings.");
     }
+
+    @Override
+    public void handleSyncPaintingRealmsMessage(SyncPaintingRealmsMessage msg, Supplier<NetworkEvent.Context> ctx)
+    {
+        throw new UnsupportedOperationException("Server cannot be told to remove world painting realms.");
+    }
+
+    @Override
+    public void handleAddPaintingRealmMessage(AddPaintingRealmMessage msg, Supplier<NetworkEvent.Context> ctx)
+    {
+        throw new UnsupportedOperationException("Server cannot be told to add world painting realms.");
+    }
 }

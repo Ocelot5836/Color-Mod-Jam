@@ -19,6 +19,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -138,6 +139,17 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
                     }
                     else
                     {
+                        if (stack.getItem() == Items.ITEM_FRAME)
+                        {
+                            Painting painting = PaintingManager.get(world).getPainting(te.getPaintingId());
+                            if (painting != null && !painting.hasBorder())
+                            {
+                                painting.setHasBorder(true);
+                                if (!player.isCreative())
+                                    stack.shrink(1);
+                                return ActionResultType.SUCCESS;
+                            }
+                        }
                         world.addEntity(new ItemEntity(world, pos.getX() + 0.5 + state.get(HORIZONTAL_FACING).getXOffset() / 1.9, pos.getY() + 0.5 + (state.get(HALF) == DoubleBlockHalf.LOWER ? 1 : 0), pos.getZ() + 0.5 + state.get(HORIZONTAL_FACING).getZOffset() / 1.9, te.removeStackFromSlot(0)));
                     }
                 }

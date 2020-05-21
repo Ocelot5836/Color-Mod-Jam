@@ -6,7 +6,6 @@ import io.github.ocelot.tileentity.PaintBucketTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.DyeItem;
@@ -35,9 +34,9 @@ public class PaintBucketBlock extends BaseBlock implements IWaterLoggable
 {
     private static final VoxelShape SHAPE = Block.makeCuboidShape(4, 0, 4, 12, 8, 12);
 
-    public PaintBucketBlock()
+    public PaintBucketBlock(Block.Properties properties)
     {
-        super(Block.Properties.create(Material.MISCELLANEOUS).hardnessAndResistance(1.0F));
+        super(properties);
         this.setDefaultState(this.getStateContainer().getBaseState().with(WATERLOGGED, false));
     }
 

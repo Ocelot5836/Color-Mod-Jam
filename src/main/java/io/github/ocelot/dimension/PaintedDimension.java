@@ -16,7 +16,6 @@ import net.minecraft.world.biome.provider.SingleBiomeProviderSettings;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.ChunkGeneratorType;
 import net.minecraft.world.gen.FlatGenerationSettings;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -50,21 +49,17 @@ public class PaintedDimension extends Dimension
 
         ListNBT layers = new ListNBT();
         {
-            this.addLayer(layers, Blocks.BEDROCK, 1);
-            this.addLayer(layers, Blocks.STONE, 54);
-            this.addLayer(layers, Blocks.DIRT, 7);
-            this.addLayer(layers, Blocks.GRASS_BLOCK, 1);
+            this.addLayer(layers, Blocks.AIR, 1);
         }
         nbt.put("layers", layers);
 
-        // Adds void platform TODO remove
-//        CompoundNBT structures = new CompoundNBT();
-//        structures.put("decoration", new CompoundNBT());
-//        nbt.put("structures", structures);
+        CompoundNBT structures = new CompoundNBT();
+        structures.put("decoration", new CompoundNBT());
+        nbt.put("structures", structures);
 
         FlatGenerationSettings generationSettings = FlatGenerationSettings.createFlatGenerator(new Dynamic<>(NBTDynamicOps.INSTANCE, nbt));
         SingleBiomeProviderSettings settings = BiomeProviderType.FIXED.createSettings(this.world.getWorldInfo()).setBiome(generationSettings.getBiome());
-        return ChunkGeneratorType.FLAT.create(this.world, BiomeProviderType.FIXED.create(settings), generationSettings);
+        return new PaintedChunkGenerator(this.world, BiomeProviderType.FIXED.create(settings), generationSettings);
     }
 
     @Nullable

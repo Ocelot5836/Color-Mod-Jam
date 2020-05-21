@@ -1,6 +1,12 @@
 package io.github.ocelot.dimension;
 
+import net.minecraft.util.SharedSeedRandom;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.GenerationSettings;
+import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 
 /**
@@ -21,6 +27,11 @@ public class PaintedBiome extends Biome implements PaintedLeavesColor
                 .waterColor(4159204)
                 .waterFogColor(329011)
                 .parent(null));
+    }
+
+    @Override
+    public void decorate(GenerationStage.Decoration stage, ChunkGenerator<? extends GenerationSettings> chunkGenerator, IWorld worldIn, long seed, SharedSeedRandom random, BlockPos pos)
+    {
     }
 
     @Override

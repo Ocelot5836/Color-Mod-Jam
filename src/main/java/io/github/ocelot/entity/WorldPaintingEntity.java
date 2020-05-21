@@ -79,12 +79,18 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
         super.readAdditional(nbt);
         this.paintingId = this.deserializePainting(nbt);
         this.teleportation = nbt.getBoolean("teleportation");
+        this.updateBoundingBox();
     }
 
     @Override
     public void setPainting(@Nullable UUID paintingId)
     {
         this.paintingId = paintingId;
+    }
+
+    public boolean isTeleportation()
+    {
+        return teleportation;
     }
 
     @Nullable
@@ -134,20 +140,27 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
     @Override
     public void onCollideWithPlayer(PlayerEntity player)
     {
-        if (!this.world.isRemote() && this.teleportation && this.paintingId != null && PaintingManager.get(this.world).hasPainting(this.paintingId))
+        if (!this.world.isRemote())
         {
-            if (this.world.getDimension().getType() == DimensionType.OVERWORLD)
+            if (!this.getBoundingBox().intersects(player.getBoundingBox()))
+                return;
+            this.teleportation = true;
+            if (this.teleportation && this.paintingId != null && PaintingManager.get(this.world).hasPainting(this.paintingId))
             {
-                if (this.paintingId.equals(FixedPaintingType.PLAID.getPainting().getId()))
+                if (this.world.getDimension().getType() == DimensionType.OVERWORLD)
                 {
-                    player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()), new PladTeleporter());
+                    if (this.paintingId.equals(FixedPaintingType.PLAID.getPainting().getId()))
+                    {
+                        player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()), new FixedPaintingTeleporter());
+                    }
+                    if (PaintingManager.get(this.world).initializeRealm(this.paintingId))
+                    {
+                        player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PAINTED_DIMENSION.get()), new PaintingTeleporter(this.paintingId));
+                    }
                 }
-            }
-            else if (this.world.getDimension().getType() == PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()))
-            {
-                if (this.paintingId.equals(FixedPaintingType.PLAID.getPainting().getId()))
+                else if (this.paintingId.equals(FixedPaintingType.PLAID.getPainting().getId()) && this.world.getDimension().getType() == PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()))
                 {
-                    player.changeDimension(DimensionType.OVERWORLD, new PladTeleporter());
+                    player.changeDimension(DimensionType.OVERWORLD, new FixedPaintingTeleporter());
                 }
             }
         }
@@ -169,8 +182,8 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
     @OnlyIn(Dist.CLIENT)
     public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
     {
-//        BlockPos blockpos = this.hangingPosition.add(x - this.getPosX(), y - this.getPosY(), z - this.getPosZ());
-//        this.setPosition(blockpos.getX(), blockpos.getY(), blockpos.getZ());
+        BlockPos blockpos = this.hangingPosition.add(x - this.getPosX(), y - this.getPosY(), z - this.getPosZ());
+        this.setPosition(blockpos.getX(), blockpos.getY(), blockpos.getZ());
     }
 
     @Override

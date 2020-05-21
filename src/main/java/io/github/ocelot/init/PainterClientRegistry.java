@@ -51,7 +51,7 @@ public class PainterClientRegistry
         RenderingRegistry.registerEntityRenderingHandler(PainterEntities.WORLD_PAINTING.get(), WorldPaintingEntityRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(PainterEntities.BOB_ROSS.get(), BobRossEntityRenderer::new);
 
-        RenderTypeLookup.setRenderLayer(PainterBlocks.PAINTED_LEAVES.get(), RenderType.getCutoutMipped());
+//        RenderTypeLookup.setRenderLayer(PainterBlocks.PAINTED_LEAVES.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(PainterBlocks.PAINT_BUCKET.get(), RenderType.getCutout());
         MinecraftForge.EVENT_BUS.register(PainterClientRegistry.class);
     }
@@ -80,7 +80,7 @@ public class PainterClientRegistry
     public static void onEvent(ColorHandlerEvent.Block event)
     {
         BlockColors blockColors = event.getBlockColors();
-        blockColors.register((state, world, pos, layer) -> world != null && pos != null ? world.getBlockColor(pos, PAINTED_LEAVES_RESOLVER) : -1, PainterBlocks.PAINTED_LEAVES.get());
+//        blockColors.register((state, world, pos, layer) -> world != null && pos != null ? world.getBlockColor(pos, PAINTED_LEAVES_RESOLVER) : -1, PainterBlocks.PAINTED_LEAVES.get());
         blockColors.register((state, world, pos, layer) -> world != null && pos != null && world.getTileEntity(pos) instanceof PaintBucketTileEntity ? ((PaintBucketTileEntity) Objects.requireNonNull(world.getTileEntity(pos))).getColor() : -1, PainterBlocks.PAINT_BUCKET.get());
     }
 

@@ -1,13 +1,15 @@
 package io.github.ocelot.painting;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import io.github.ocelot.init.PainterMessages;
 import io.github.ocelot.network.AddPaintingMessage;
+import io.github.ocelot.network.AddPaintingRealmMessage;
 import io.github.ocelot.network.RemovePaintingMessage;
 import io.github.ocelot.network.SyncPaintingMessage;
-import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
@@ -22,6 +24,8 @@ import java.util.*;
 public class PaintingManagerSavedData extends WorldSavedData implements PaintingManager
 {
     private final Map<UUID, Painting> paintings;
+    private final BiMap<Integer, Integer> paintingRealmPositions;
+    private final Map<Integer, UUID> paintingRealmPositionLookup;
     private int nextId;
 
     private ServerWorld world;
@@ -30,35 +34,25 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
     {
         super(DATA_NAME);
         this.paintings = new HashMap<>();
+        this.paintingRealmPositions = HashBiMap.create();
+        this.paintingRealmPositionLookup = new HashMap<>();
         this.nextId = 0;
     }
 
-    private void generateBlocks(int dimension, int[] pixels)
+    @Override
+    public boolean initializeRealm(UUID id)
     {
-        BlockPos pos = PaintingManager.getDimensionPos(dimension);
-        int[] heights = new int[Painting.SIZE];
-        Arrays.fill(heights, 0);
-        for (int x = 0; x < Painting.SIZE; x++)
+        if (!this.hasPainting(id))
+            return false;
+        int imageId = Arrays.hashCode(Objects.requireNonNull(this.getPainting(id)).getPixels());
+        if (!this.paintingRealmPositions.containsKey(imageId))
         {
-            for (int y = 0; y < Painting.SIZE; y++)
-            {
-                if (pixels[y] != -1)
-                {
-                    heights[x] = Painting.SIZE - y;
-                    break;
-                }
-            }
+            PainterMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new AddPaintingRealmMessage(imageId, this.nextId));
+            this.paintingRealmPositions.put(imageId, this.nextId++);
+            this.paintingRealmPositionLookup.put(imageId, id);
+            return true;
         }
-
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int z = 0; z < Painting.SIZE; z++)
-        {
-            for (int x = 0; x < Painting.SIZE; x++)
-            {
-                mutable.setPos(pos.getX() + x, pos.getY() + (heights[x] + heights[z]) / 2, pos.getZ() + z);
-                this.world.setBlockState(mutable, Blocks.GRASS.getDefaultState());
-            }
-        }
+        return this.paintingRealmPositions.containsKey(imageId);
     }
 
     @Override
@@ -97,10 +91,39 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
         return FixedPaintingType.isFixed(id) ? FixedPaintingType.get(id) : this.paintings.get(id);
     }
 
+    @Nullable
+    @Override
+    public UUID getRealmPainting(ChunkPos pos)
+    {
+        byte offsetPos = getRealmOffset(pos);
+        int xOffset = offsetPos & 1;
+        int zOffset = (offsetPos >> 1) & 1;
+        if ((pos.z - zOffset) != 0 || (pos.x - xOffset) % (REALM_DISTANCE / 16) != 0)
+            return null;
+        return this.paintingRealmPositionLookup.get(this.paintingRealmPositions.inverse().getOrDefault((pos.x - xOffset) / (REALM_DISTANCE / 16), -1));
+    }
+
+    @Override
+    public byte getRealmOffset(ChunkPos pos)
+    {
+        byte offset = 0;
+        if ((pos.x & 1) == 1)
+            offset |= 1;
+        if ((pos.z & 1) == 1)
+            offset |= 1 << 1;
+        return offset;
+    }
+
     @Override
     public Collection<Painting> getAllPaintings()
     {
         return this.paintings.values();
+    }
+
+    @Override
+    public Map<Integer, Integer> getAllPaintingRealms()
+    {
+        return this.paintingRealmPositions;
     }
 
     @Override
@@ -113,7 +136,17 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
             Painting painting = new Painting(paintingsNbt.getCompound(i));
             painting.setPaintingManager(this);
             this.paintings.put(painting.getId(), painting);
+            this.paintingRealmPositionLookup.put(Arrays.hashCode(painting.getPixels()), painting.getId());
         }
+
+        this.paintingRealmPositions.clear();
+        ListNBT paintingRealmsNbt = nbt.getList("paintingRealms", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < paintingRealmsNbt.size(); i++)
+        {
+            CompoundNBT paintingRealmNbt = paintingRealmsNbt.getCompound(i);
+            this.paintingRealmPositions.put(paintingRealmNbt.getInt("paintingId"), paintingRealmNbt.getInt("realmId"));
+        }
+
         this.nextId = nbt.getInt("nextId");
     }
 
@@ -123,6 +156,17 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
         ListNBT paintingsNbt = new ListNBT();
         this.paintings.values().stream().map(Painting::serializeNBT).forEach(paintingsNbt::add);
         nbt.put("paintings", paintingsNbt);
+
+        ListNBT paintingRealmsNbt = new ListNBT();
+        this.paintingRealmPositions.entrySet().stream().map(entry ->
+        {
+            CompoundNBT paintingRealmNbt = new CompoundNBT();
+            paintingRealmNbt.putInt("paintingId", entry.getKey());
+            paintingRealmNbt.putInt("realmId", entry.getValue());
+            return paintingRealmNbt;
+        }).forEach(paintingRealmsNbt::add);
+        nbt.put("paintingRealms", paintingRealmsNbt);
+
         nbt.putInt("nextId", this.nextId);
         return nbt;
     }

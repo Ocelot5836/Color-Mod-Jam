@@ -22,7 +22,6 @@ public class Painting
     private final int[] pixels;
     private UUID id;
     private boolean hasBorder;
-    private int index;
     private PaintingManagerSavedData paintingManager;
 
     Painting(int[] pixels, UUID id, boolean hasBorder)
@@ -39,7 +38,6 @@ public class Painting
         }
         this.id = id;
         this.hasBorder = hasBorder;
-        this.index = -1;
     }
 
     public Painting()
@@ -48,7 +46,6 @@ public class Painting
         Arrays.fill(this.pixels, DyeColor.WHITE.getColorValue());
         this.id = UUID.randomUUID();
         this.hasBorder = false;
-        this.index = -1;
     }
 
     public Painting(@Nullable Painting parent)
@@ -64,7 +61,6 @@ public class Painting
         }
         this.id = UUID.randomUUID();
         this.hasBorder = parent != null && parent.hasBorder;
-        this.index = -1;
     }
 
     public Painting(CompoundNBT nbt)
@@ -82,7 +78,6 @@ public class Painting
         }
         this.id = nbt.hasUniqueId("id") ? nbt.getUniqueId("id") : UUID.randomUUID();
         this.hasBorder = nbt.getBoolean("hasBorder");
-        this.index = nbt.getInt("index");
     }
 
     protected void setPaintingManager(PaintingManagerSavedData paintingManager)
@@ -177,22 +172,6 @@ public class Painting
     }
 
     /**
-     * @return Whether or not a dimension has been generated for this painting
-     */
-    public boolean hasDimension()
-    {
-        return this.index != -1;
-    }
-
-    /**
-     * @return The dimension index of this painting
-     */
-    public int getIndex()
-    {
-        return index;
-    }
-
-    /**
      * Sets whether or not this painting shows a border.
      *
      * @param hasBorder Whether or not a border should render
@@ -200,18 +179,6 @@ public class Painting
     public void setHasBorder(boolean hasBorder)
     {
         this.hasBorder = hasBorder;
-        if (this.paintingManager != null)
-            this.paintingManager.sync(this);
-    }
-
-    /**
-     * Sets the dimension of this painting.
-     *
-     * @param index The new dimension index
-     */
-    public void setIndex(int index)
-    {
-        this.index = index;
         if (this.paintingManager != null)
             this.paintingManager.sync(this);
     }
@@ -227,7 +194,6 @@ public class Painting
         nbt.putIntArray("pixels", this.pixels);
         nbt.putUniqueId("id", this.id);
         nbt.putBoolean("hasBorder", this.hasBorder);
-        nbt.putInt("index", this.index);
         return nbt;
     }
 

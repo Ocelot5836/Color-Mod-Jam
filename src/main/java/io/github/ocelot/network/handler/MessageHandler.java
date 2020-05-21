@@ -19,4 +19,8 @@ public interface MessageHandler
     void handleAddPaintingMessage(AddPaintingMessage msg, Supplier<NetworkEvent.Context> ctx);
 
     void handleRemovePaintingMessage(RemovePaintingMessage msg, Supplier<NetworkEvent.Context> ctx);
+
+    void handleSyncPaintingRealmsMessage(SyncPaintingRealmsMessage msg, Supplier<NetworkEvent.Context> ctx);
+
+    void handleAddPaintingRealmMessage(AddPaintingRealmMessage msg, Supplier<NetworkEvent.Context> ctx);
 }
