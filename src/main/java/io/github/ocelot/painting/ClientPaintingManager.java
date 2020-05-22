@@ -38,12 +38,6 @@ public class ClientPaintingManager implements PaintingManager
     }
 
     @Override
-    public void removePainting(UUID id)
-    {
-        throw new UnsupportedOperationException("Client cannot modify paintings");
-    }
-
-    @Override
     public boolean hasPainting(UUID id)
     {
         return FixedPaintingType.isFixed(id) || this.paintings.containsKey(id);

@@ -144,7 +144,7 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
         {
             if (!this.getBoundingBox().intersects(player.getBoundingBox()))
                 return;
-            this.teleportation = true;
+            this.teleportation = true; // TODO remove when bob ross is added
             if (this.teleportation && this.paintingId != null && PaintingManager.get(this.world).hasPainting(this.paintingId))
             {
                 if (this.world.getDimension().getType() == DimensionType.OVERWORLD)
@@ -153,9 +153,9 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
                     {
                         player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()), new FixedPaintingTeleporter());
                     }
-                    if (PaintingManager.get(this.world).initializeRealm(this.paintingId))
+                    else if (PaintingManager.get(this.world).initializeRealm(this.paintingId))
                     {
-                        player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PAINTED_DIMENSION.get()), new PaintingTeleporter(this.paintingId));
+                        player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PAINTED_DIMENSION.get()), new PaintingTeleporter(this));
                     }
                 }
                 else if (this.paintingId.equals(FixedPaintingType.PLAID.getPainting().getId()) && this.world.getDimension().getType() == PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()))

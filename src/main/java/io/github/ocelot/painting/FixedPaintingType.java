@@ -19,7 +19,7 @@ public enum FixedPaintingType
 
     FixedPaintingType(UUID id, int[] pixels, boolean teleportation)
     {
-        this.painting = new Painting(pixels, id, true);
+        this.painting = new Painting(pixels, id, "Ocelot5836", true);
         this.teleportation = teleportation;
     }
 

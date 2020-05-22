@@ -2,6 +2,7 @@ package io.github.ocelot.painting;
 
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,10 +22,11 @@ public class Painting
 
     private final int[] pixels;
     private UUID id;
+    private String author;
     private boolean hasBorder;
     private PaintingManagerSavedData paintingManager;
 
-    Painting(int[] pixels, UUID id, boolean hasBorder)
+    Painting(int[] pixels, UUID id, String author, boolean hasBorder)
     {
         if (validateSize(pixels))
         {
@@ -37,6 +39,7 @@ public class Painting
             Arrays.fill(this.pixels, DyeColor.WHITE.getColorValue());
         }
         this.id = id;
+        this.author = author;
         this.hasBorder = hasBorder;
     }
 
@@ -45,6 +48,7 @@ public class Painting
         this.pixels = new int[SIZE * SIZE];
         Arrays.fill(this.pixels, DyeColor.WHITE.getColorValue());
         this.id = UUID.randomUUID();
+        this.author = null;
         this.hasBorder = false;
     }
 
@@ -60,6 +64,7 @@ public class Painting
             System.arraycopy(parent.pixels, 0, this.pixels, 0, parent.pixels.length);
         }
         this.id = UUID.randomUUID();
+        this.author = parent != null ? parent.author : null;
         this.hasBorder = parent != null && parent.hasBorder;
     }
 
@@ -77,6 +82,7 @@ public class Painting
             Arrays.fill(this.pixels, DyeColor.WHITE.getColorValue());
         }
         this.id = nbt.hasUniqueId("id") ? nbt.getUniqueId("id") : UUID.randomUUID();
+        this.author = nbt.contains("author", Constants.NBT.TAG_STRING) ? nbt.getString("author") : null;
         this.hasBorder = nbt.getBoolean("hasBorder");
     }
 
@@ -164,6 +170,15 @@ public class Painting
     }
 
     /**
+     * @return The user that created this painting or null if there is no recorded author
+     */
+    @Nullable
+    public String getAuthor()
+    {
+        return author;
+    }
+
+    /**
      * @return Whether or not a border should overlay on this painting
      */
     public boolean hasBorder()
@@ -193,6 +208,7 @@ public class Painting
         CompoundNBT nbt = new CompoundNBT();
         nbt.putIntArray("pixels", this.pixels);
         nbt.putUniqueId("id", this.id);
+        nbt.putString("author", this.author);
         nbt.putBoolean("hasBorder", this.hasBorder);
         return nbt;
     }

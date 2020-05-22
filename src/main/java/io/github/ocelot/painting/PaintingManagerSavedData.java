@@ -5,12 +5,10 @@ import com.google.common.collect.HashBiMap;
 import io.github.ocelot.init.PainterMessages;
 import io.github.ocelot.network.AddPaintingMessage;
 import io.github.ocelot.network.AddPaintingRealmMessage;
-import io.github.ocelot.network.RemovePaintingMessage;
 import io.github.ocelot.network.SyncPaintingMessage;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -27,8 +25,6 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
     private final BiMap<Integer, Integer> paintingRealmPositions;
     private final Map<Integer, UUID> paintingRealmPositionLookup;
     private int nextId;
-
-    private ServerWorld world;
 
     public PaintingManagerSavedData()
     {
@@ -66,16 +62,6 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
         this.paintings.put(painting.getId(), painting);
         this.markDirty();
         PainterMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new AddPaintingMessage(painting));
-    }
-
-    @Override
-    public void removePainting(UUID id)
-    {
-        if (FixedPaintingType.isFixed(id))
-            return;
-        this.paintings.remove(id);
-        this.markDirty();
-        PainterMessages.INSTANCE.send(PacketDistributor.ALL.noArg(), new RemovePaintingMessage(id));
     }
 
     @Override
@@ -169,11 +155,6 @@ public class PaintingManagerSavedData extends WorldSavedData implements Painting
 
         nbt.putInt("nextId", this.nextId);
         return nbt;
-    }
-
-    public void setWorld(ServerWorld world)
-    {
-        this.world = world;
     }
 
     public void sync(Painting painting)

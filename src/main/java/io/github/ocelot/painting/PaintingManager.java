@@ -43,24 +43,6 @@ public interface PaintingManager
     void addPainting(Painting painting);
 
     /**
-     * Removes the painting with the specified id.
-     *
-     * @param id The id of the painting to remove
-     */
-    void removePainting(UUID id);
-
-    /**
-     * Checks to see if the painting exists.
-     *
-     * @param painting The painting to check
-     * @return Whether or not that painting has been created
-     */
-    default boolean hasPainting(@Nullable Painting painting)
-    {
-        return painting != null && this.hasPainting(painting.getId());
-    }
-
-    /**
      * Checks to see if the painting with the specified id exists.
      *
      * @param id The id to check
@@ -94,9 +76,21 @@ public interface PaintingManager
         return new BlockPos(this.getAllPaintingRealms().getOrDefault(realmId, 0) * REALM_DISTANCE, 63, 0);
     }
 
+    /**
+     * Fetches the id of the painting that should exist at the specified chunk position.
+     *
+     * @param pos The position of the chunk
+     * @return The id of the painting at that position or null if there is no painting realm there
+     */
     @Nullable
     UUID getRealmPainting(ChunkPos pos);
 
+    /**
+     * Calculates the offset of the painting based on the specified position.
+     *
+     * @param pos The position of the chunk
+     * @return The packed x and z offset of the painting realm
+     */
     byte getRealmOffset(ChunkPos pos);
 
     /**
@@ -121,8 +115,6 @@ public interface PaintingManager
             return ClientPaintingManager.INSTANCE;
         if (!(world instanceof ServerWorld))
             throw new IllegalStateException("Server side world is not an instance of ServerWorld?");
-        PaintingManagerSavedData data = (((ServerWorld) world).getServer().getWorld(DimensionType.OVERWORLD).getSavedData()).getOrCreate(PaintingManagerSavedData::new, DATA_NAME);
-        data.setWorld((ServerWorld) world);
-        return data;
+        return (((ServerWorld) world).getServer().getWorld(DimensionType.OVERWORLD).getSavedData()).getOrCreate(PaintingManagerSavedData::new, DATA_NAME);
     }
 }

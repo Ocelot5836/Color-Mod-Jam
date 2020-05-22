@@ -5,10 +5,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.network.datasync.IDataSerializer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -30,33 +26,6 @@ import java.util.UUID;
  */
 public class CapabilityPaintingSource
 {
-    public static final IDataSerializer<PaintingData> SOURCE_PAINTING_HOLDER = new IDataSerializer<PaintingData>()
-    {
-        @Override
-        public void write(PacketBuffer buf, PaintingData value)
-        {
-            buf.writeBoolean(value.getSourcePainting() != null);
-            if (value.getSourcePainting() != null)
-                buf.writeUniqueId(value.getSourcePainting());
-        }
-
-        @Override
-        public PaintingData read(PacketBuffer buf)
-        {
-            PaintingData paintingData = new PaintingDataImpl();
-            if (buf.readBoolean())
-                paintingData.setSourcePainting(buf.readUniqueId());
-            return paintingData;
-        }
-
-        @Override
-        public PaintingData copyValue(PaintingData value)
-        {
-            return new PaintingDataImpl(value);
-        }
-    };
-    public static final DataParameter<PaintingData> SOURCE_PAINTING = EntityDataManager.createKey(Entity.class, SOURCE_PAINTING_HOLDER);
-
     @CapabilityInject(PaintingData.class)
     public static Capability<PaintingData> SOURCE_PAINTING_CAPABILITY = null;
 
@@ -78,11 +47,7 @@ public class CapabilityPaintingSource
         PlayerEntity player = event.getPlayer();
         LazyOptional<PaintingData> newPaintingData = event.getPlayer().getCapability(SOURCE_PAINTING_CAPABILITY);
         LazyOptional<PaintingData> oldPaintingData = event.getOriginal().getCapability(SOURCE_PAINTING_CAPABILITY);
-        oldPaintingData.ifPresent(oldData ->
-        {
-            newPaintingData.ifPresent(newData -> newData.setSourcePainting(oldData.getSourcePainting()));
-            player.getDataManager().set(SOURCE_PAINTING, new PaintingDataImpl(oldData));
-        });
+        oldPaintingData.ifPresent(oldData -> newPaintingData.ifPresent(newData -> newData.setSourcePainting(oldData.getSourcePainting())));
     }
 
     /**
@@ -106,15 +71,15 @@ public class CapabilityPaintingSource
         void setSourcePainting(@Nullable UUID paintingId);
     }
 
-    private static class PaintingDataImpl implements PaintingData
+    public static class PaintingDataImpl implements PaintingData
     {
         private UUID paintingId;
 
-        private PaintingDataImpl()
+        public PaintingDataImpl()
         {
         }
 
-        private PaintingDataImpl(PaintingData other)
+        public PaintingDataImpl(PaintingData other)
         {
             this.paintingId = other.getSourcePainting();
         }

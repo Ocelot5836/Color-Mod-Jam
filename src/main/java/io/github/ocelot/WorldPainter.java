@@ -1,19 +1,22 @@
 package io.github.ocelot;
 
 import io.github.ocelot.data.CapabilityPaintingSource;
+import io.github.ocelot.entity.DeathPaintingTeleporter;
 import io.github.ocelot.init.*;
 import io.github.ocelot.network.SyncPaintingRealmsMessage;
 import io.github.ocelot.network.SyncPaintingsMessage;
 import io.github.ocelot.painting.PaintingManager;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.RegisterDimensionsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -104,17 +107,29 @@ public class WorldPainter
     }
 
     @SubscribeEvent
-    public void onEvent(LivingDeathEvent event)
+    public void onEvent(LivingHurtEvent event)
     {
-        Entity entity = event.getEntity();
-        entity.getCapability(CapabilityPaintingSource.SOURCE_PAINTING_CAPABILITY).ifPresent(data ->
+        LivingEntity entity = event.getEntityLiving();
+        if (entity.getHealth() - event.getAmount() <= 0 && entity.dimension == PainterDimensions.getDimensionType(PainterDimensions.PAINTED_DIMENSION.get()))
         {
-            if (data.getSourcePainting() != null)
+            entity.getCapability(CapabilityPaintingSource.SOURCE_PAINTING_CAPABILITY).ifPresent(data ->
             {
-                event.setCanceled(true);
-                entity.changeDimension(DimensionType.OVERWORLD); // TODO warp to outside of painting with motion
-                data.setSourcePainting(null);
-            }
-        });
+                if (data.getSourcePainting() != null)
+                {
+                    event.setCanceled(true);
+                    entity.changeDimension(DimensionType.OVERWORLD, new DeathPaintingTeleporter(data.getSourcePainting())); // TODO warp to outside of painting with motion
+                    data.setSourcePainting(null);
+                    entity.fallDistance = 0;
+                    entity.setFireTimer(0);
+                    entity.setHealth(1);
+                    entity.clearActivePotions();
+                    if (!(entity instanceof PlayerEntity) || !((PlayerEntity) entity).isCreative())
+                    {
+                        entity.addPotionEffect(new EffectInstance(Effects.REGENERATION, 900, 1));
+                        entity.addPotionEffect(new EffectInstance(Effects.ABSORPTION, 100, 1));
+                    }
+                }
+            });
+        }
     }
 }
