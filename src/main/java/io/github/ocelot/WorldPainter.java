@@ -62,10 +62,11 @@ public class WorldPainter
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         PainterBlocks.BLOCKS.register(bus);
         PainterBlocks.TILE_ENTTIES.register(bus);
-        PainterEntities.ENTITIES.register(bus);
         PainterItems.ITEMS.register(bus);
-        PainterDimensions.BIOMES.register(bus);
+        PainterContainers.CONTAINERS.register(bus);
+        PainterEntities.ENTITIES.register(bus);
         PainterDimensions.DIMENSIONS.register(bus);
+        PainterDimensions.BIOMES.register(bus);
         MinecraftForge.EVENT_BUS.register(this);
     }
 

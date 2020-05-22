@@ -5,6 +5,7 @@ import io.github.ocelot.client.render.entity.BobRossEntityRenderer;
 import io.github.ocelot.client.render.entity.WorldPaintingEntityRenderer;
 import io.github.ocelot.init.PainterBlocks;
 import io.github.ocelot.init.PainterEntities;
+import io.github.ocelot.init.PainterScreens;
 import io.github.ocelot.item.PaintDyeable;
 import io.github.ocelot.tileentity.PaintBucketTileEntity;
 import io.github.ocelot.client.render.tileentity.EaselTileEntityRenderer;
@@ -42,6 +43,8 @@ public class PainterClientRegistry
     @OnlyIn(Dist.CLIENT)
     public static void init(IEventBus bus)
     {
+        PainterScreens.init();
+
         ClientRegistry.bindTileEntityRenderer(PainterBlocks.EASEL_TE.get(), EaselTileEntityRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(PainterEntities.WORLD_PAINTING.get(), WorldPaintingEntityRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(PainterEntities.BOB_ROSS.get(), BobRossEntityRenderer::new);
