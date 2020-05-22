@@ -116,7 +116,7 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
 
                                 if (FixedPaintingType.isFixed(te.getPaintingId()) || !PaintingManager.get(world).hasPainting(te.getPaintingId()))
                                 {
-                                    Painting painting = new Painting(FixedPaintingType.get(te.getPaintingId()));
+                                    Painting painting = new Painting(FixedPaintingType.get(te.getPaintingId()), "Ocelot5836");
                                     PaintingManager.get(world).addPainting(painting);
                                     te.setPainting(painting.getId());
                                 }
@@ -159,7 +159,7 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
             {
                 if (!world.isRemote())
                 {
-                    te.setInventorySlotContents(0, stack);
+                    te.addPainting(stack, player.getDisplayName().getFormattedText());
                     if (!player.isCreative())
                         stack.shrink(1);
                 }

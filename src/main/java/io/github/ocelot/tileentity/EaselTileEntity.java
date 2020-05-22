@@ -50,6 +50,21 @@ public class EaselTileEntity extends TileEntity implements PaintingHolder, ISide
             this.world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), Constants.BlockFlags.DEFAULT);
     }
 
+    public void addPainting(ItemStack stack, @Nullable String user)
+    {
+        if (this.world == null)
+            return;
+        UUID stackId = PainterItems.WORLD_PAINTING.get().getPaintingId(stack);
+        if (FixedPaintingType.isFixed(stackId))
+        {
+            this.setPainting(stackId);
+            return;
+        }
+        Painting painting = new Painting(PaintingManager.get(this.world).getPainting(PainterItems.WORLD_PAINTING.get().getPaintingId(stack)), user);
+        PaintingManager.get(this.world).addPainting(painting);
+        this.setPainting(painting.getId());
+    }
+
     @Nullable
     @Override
     public UUID getPaintingId()
@@ -125,17 +140,9 @@ public class EaselTileEntity extends TileEntity implements PaintingHolder, ISide
     @Override
     public void setInventorySlotContents(int index, ItemStack stack)
     {
-        if (this.world != null && index == 0)
+        if (index == 0)
         {
-            UUID stackId = PainterItems.WORLD_PAINTING.get().getPaintingId(stack);
-            if (FixedPaintingType.isFixed(stackId))
-            {
-                this.setPainting(stackId);
-                return;
-            }
-            Painting painting = new Painting(PaintingManager.get(this.world).getPainting(PainterItems.WORLD_PAINTING.get().getPaintingId(stack)));
-            PaintingManager.get(this.world).addPainting(painting);
-            this.setPainting(painting.getId());
+            this.addPainting(stack, null);
         }
     }
 

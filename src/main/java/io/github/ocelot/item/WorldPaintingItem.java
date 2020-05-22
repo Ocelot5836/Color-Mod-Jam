@@ -2,6 +2,7 @@ package io.github.ocelot.item;
 
 import io.github.ocelot.entity.WorldPaintingEntity;
 import io.github.ocelot.painting.FixedPaintingType;
+import io.github.ocelot.painting.PaintingManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,6 +14,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.StringUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
@@ -23,6 +25,7 @@ import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -41,9 +44,23 @@ public class WorldPaintingItem extends HangingEntityItem
     @Override
     public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag)
     {
-        if (flag.isAdvanced() && this.hasPainting(stack) && !FixedPaintingType.isFixed(this.getPaintingId(stack)))
+        if (this.hasPainting(stack) && !FixedPaintingType.isFixed(this.getPaintingId(stack)))
         {
-            tooltip.add(new TranslationTextComponent(this.getTranslationKey(stack) + ".id", this.getPaintingId(stack)).setStyle(new Style().setColor(TextFormatting.DARK_GRAY)));
+            UUID paintingId = this.getPaintingId(stack);
+            PaintingManager paintingManager = world == null ? null : PaintingManager.get(world);
+            if (paintingManager == null || !paintingManager.hasPainting(paintingId) || StringUtils.isNullOrEmpty(Objects.requireNonNull(paintingManager.getPainting(paintingId)).getAuthor()))
+            {
+                tooltip.add(new TranslationTextComponent(this.getTranslationKey(stack) + ".unknown_author").setStyle(new Style().setColor(TextFormatting.GRAY)));
+            }
+            else
+            {
+                tooltip.add(new TranslationTextComponent(this.getTranslationKey(stack) + ".author", Objects.requireNonNull(paintingManager.getPainting(paintingId)).getAuthor()).setStyle(new Style().setColor(TextFormatting.GRAY)));
+            }
+
+            if (flag.isAdvanced())
+            {
+                tooltip.add(new TranslationTextComponent(this.getTranslationKey(stack) + ".id", paintingId).setStyle(new Style().setColor(TextFormatting.DARK_GRAY)));
+            }
         }
     }
 

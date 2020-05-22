@@ -2,6 +2,7 @@ package io.github.ocelot.painting;
 
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.StringUtils;
 import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,12 +22,12 @@ public class Painting
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final int[] pixels;
+    private final String author;
     private UUID id;
-    private String author;
     private boolean hasBorder;
     private PaintingManagerSavedData paintingManager;
 
-    Painting(int[] pixels, UUID id, String author, boolean hasBorder)
+    Painting(int[] pixels, String author, UUID id, boolean hasBorder)
     {
         if (validateSize(pixels))
         {
@@ -38,8 +39,8 @@ public class Painting
             this.pixels = new int[SIZE * SIZE];
             Arrays.fill(this.pixels, DyeColor.WHITE.getColorValue());
         }
-        this.id = id;
         this.author = author;
+        this.id = id;
         this.hasBorder = hasBorder;
     }
 
@@ -47,12 +48,12 @@ public class Painting
     {
         this.pixels = new int[SIZE * SIZE];
         Arrays.fill(this.pixels, DyeColor.WHITE.getColorValue());
-        this.id = UUID.randomUUID();
         this.author = null;
+        this.id = UUID.randomUUID();
         this.hasBorder = false;
     }
 
-    public Painting(@Nullable Painting parent)
+    public Painting(@Nullable Painting parent, @Nullable String user)
     {
         this.pixels = new int[SIZE * SIZE];
         if (parent == null)
@@ -63,8 +64,8 @@ public class Painting
         {
             System.arraycopy(parent.pixels, 0, this.pixels, 0, parent.pixels.length);
         }
+        this.author = parent != null && !StringUtils.isNullOrEmpty(parent.author) ? parent.author : user;
         this.id = UUID.randomUUID();
-        this.author = parent != null ? parent.author : null;
         this.hasBorder = parent != null && parent.hasBorder;
     }
 
@@ -81,8 +82,8 @@ public class Painting
             this.pixels = new int[SIZE * SIZE];
             Arrays.fill(this.pixels, DyeColor.WHITE.getColorValue());
         }
-        this.id = nbt.hasUniqueId("id") ? nbt.getUniqueId("id") : UUID.randomUUID();
         this.author = nbt.contains("author", Constants.NBT.TAG_STRING) ? nbt.getString("author") : null;
+        this.id = nbt.hasUniqueId("id") ? nbt.getUniqueId("id") : UUID.randomUUID();
         this.hasBorder = nbt.getBoolean("hasBorder");
     }
 
@@ -162,20 +163,20 @@ public class Painting
     }
 
     /**
-     * @return The id of this painting
-     */
-    public UUID getId()
-    {
-        return id;
-    }
-
-    /**
      * @return The user that created this painting or null if there is no recorded author
      */
     @Nullable
     public String getAuthor()
     {
         return author;
+    }
+
+    /**
+     * @return The id of this painting
+     */
+    public UUID getId()
+    {
+        return id;
     }
 
     /**
@@ -208,7 +209,8 @@ public class Painting
         CompoundNBT nbt = new CompoundNBT();
         nbt.putIntArray("pixels", this.pixels);
         nbt.putUniqueId("id", this.id);
-        nbt.putString("author", this.author);
+        if (this.author != null)
+            nbt.putString("author", this.author);
         nbt.putBoolean("hasBorder", this.hasBorder);
         return nbt;
     }

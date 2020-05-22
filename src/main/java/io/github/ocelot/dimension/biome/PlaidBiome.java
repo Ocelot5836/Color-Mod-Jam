@@ -1,4 +1,4 @@
-package io.github.ocelot.dimension;
+package io.github.ocelot.dimension.biome;
 
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
@@ -6,7 +6,7 @@ import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 /**
  * @author Ocelot
  */
-public class PlaidBiome extends Biome implements PaintedLeavesColor
+public class PlaidBiome extends Biome
 {
     public PlaidBiome()
     {
@@ -29,9 +29,9 @@ public class PlaidBiome extends Biome implements PaintedLeavesColor
         return (((int) Math.abs(posX * 128)) & 0xff) << 16 | ((int) Math.abs(posZ * 128)) & 0xff;
     }
 
-    @Override
-    public int getFoliageColor(double posX, double posZ)
-    {
-        return this.getGrassColor(posX, posZ);
-    }
+//    @Override
+//    public int getFoliageColor(double posX, double posZ)
+//    {
+//        return this.getGrassColor(posX, posZ);
+//    }
 }

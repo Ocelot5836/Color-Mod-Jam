@@ -1,32 +1,25 @@
 package io.github.ocelot.init;
 
 import io.github.ocelot.WorldPainter;
-import io.github.ocelot.dimension.PaintedLeavesColor;
 import io.github.ocelot.entity.render.BobRossEntityRenderer;
 import io.github.ocelot.entity.render.WorldPaintingEntityRenderer;
 import io.github.ocelot.item.PaintDyeable;
 import io.github.ocelot.tileentity.PaintBucketTileEntity;
 import io.github.ocelot.tileentity.renderer.EaselTileEntityRenderer;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.BlockColors;
-import net.minecraft.client.renderer.color.ColorCache;
 import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.Item;
-import net.minecraft.world.level.ColorResolver;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,7 +33,7 @@ import java.util.Objects;
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = WorldPainter.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class PainterClientRegistry
 {
-    public static final ColorResolver PAINTED_LEAVES_RESOLVER = (biome, posX, posZ) -> biome instanceof PaintedLeavesColor ? ((PaintedLeavesColor) biome).getFoliageColor(posX, posZ) : -1;
+//    public static final ColorResolver PAINTED_LEAVES_RESOLVER = (biome, posX, posZ) -> biome instanceof PaintedLeavesColor ? ((PaintedLeavesColor) biome).getFoliageColor(posX, posZ) : -1;
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -56,24 +49,24 @@ public class PainterClientRegistry
         MinecraftForge.EVENT_BUS.register(PainterClientRegistry.class);
     }
 
-    @SuppressWarnings("unchecked")
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public static void onWorldLoad(WorldEvent.Load event)
-    {
-        if (event.getWorld() instanceof ClientWorld)
-        {
-            try
-            {
-                Object2ObjectArrayMap<ColorResolver, ColorCache> map = (Object2ObjectArrayMap<ColorResolver, ColorCache>) ObfuscationReflectionHelper.findField(ClientWorld.class, "field_228315_B_").get(event.getWorld());
-                if (!map.containsKey(PAINTED_LEAVES_RESOLVER))
-                    map.put(PAINTED_LEAVES_RESOLVER, new ColorCache());
-            } catch (IllegalAccessException e)
-            {
-                LOGGER.error("Could not access block colors", e);
-            }
-        }
-    }
+//    @SuppressWarnings("unchecked")
+//    @OnlyIn(Dist.CLIENT)
+//    @SubscribeEvent
+//    public static void onWorldLoad(WorldEvent.Load event)
+//    {
+//        if (event.getWorld() instanceof ClientWorld)
+//        {
+//            try
+//            {
+//                Object2ObjectArrayMap<ColorResolver, ColorCache> map = (Object2ObjectArrayMap<ColorResolver, ColorCache>) ObfuscationReflectionHelper.findField(ClientWorld.class, "field_228315_B_").get(event.getWorld());
+//                if (!map.containsKey(PAINTED_LEAVES_RESOLVER))
+//                    map.put(PAINTED_LEAVES_RESOLVER, new ColorCache());
+//            } catch (IllegalAccessException e)
+//            {
+//                LOGGER.error("Could not access block colors", e);
+//            }
+//        }
+//    }
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent

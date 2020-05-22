@@ -12,6 +12,8 @@
 	"item.worldpainter.paintbrush.brush.large": "Large",
 	"item.worldpainter.world_painting": "Custom Painting",
 	"item.worldpainter.world_painting.id": "ID: %s",
+	"item.worldpainter.world_painting.author": "Author: %s",
+	"item.worldpainter.world_painting.unknown_author": "Unknown Author",
 	"item.worldpainter.teleportation_painting": "Teleportation Painting",
 	"item.worldpainter.fixed_painting.plaid": "Plaid Painting",
 	"item.worldpainter.afro": "Bob Ross's Afro",

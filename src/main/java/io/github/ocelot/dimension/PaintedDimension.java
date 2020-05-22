@@ -1,6 +1,7 @@
 package io.github.ocelot.dimension;
 
 import com.mojang.datafixers.Dynamic;
+import io.github.ocelot.dimension.biome.PaintedChunkGenerator;
 import io.github.ocelot.init.PainterDimensions;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;

@@ -1,5 +1,6 @@
-package io.github.ocelot.entity;
+package io.github.ocelot.dimension.teleporter;
 
+import io.github.ocelot.entity.WorldPaintingEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -30,7 +31,7 @@ public class DeathPaintingTeleporter implements ITeleporter
             Direction facing = paintingEntity.getHorizontalFacing().getOpposite();
             BlockPos paintingPos = ((WorldPaintingEntity) paintingEntity).getHangingPosition().offset(facing.getOpposite());
             entity.setPositionAndRotation(paintingPos.getX() + 0.5 + facing.getXOffset() * 0.5 - facing.rotateYCCW().getXOffset() * 0.5, paintingPos.getY(), paintingPos.getZ() + 0.5 + facing.getZOffset() * 0.5 - facing.rotateYCCW().getZOffset() * 0.5, facing.getHorizontalAngle(), entity.rotationPitch);
-            entity.setMotion(facing.getOpposite().getXOffset() * 0.5, 0.5, facing.getOpposite().getZOffset() * 0.5);
+            entity.setMotion(facing.getOpposite().getXOffset()*0.8, 0.5, facing.getOpposite().getZOffset()*0.8);
         }
         else
         {

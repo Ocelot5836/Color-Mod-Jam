@@ -1,5 +1,7 @@
 package io.github.ocelot.entity;
 
+import io.github.ocelot.dimension.teleporter.FixedPaintingTeleporter;
+import io.github.ocelot.dimension.teleporter.StandardPaintingTeleporter;
 import io.github.ocelot.init.PainterDimensions;
 import io.github.ocelot.init.PainterEntities;
 import io.github.ocelot.init.PainterItems;
@@ -151,16 +153,12 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
                 {
                     if (this.paintingId.equals(FixedPaintingType.PLAID.getPainting().getId()))
                     {
-                        player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()), new FixedPaintingTeleporter());
+                        player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()), new FixedPaintingTeleporter(this));
                     }
                     else if (PaintingManager.get(this.world).initializeRealm(this.paintingId))
                     {
-                        player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PAINTED_DIMENSION.get()), new PaintingTeleporter(this));
+                        player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PAINTED_DIMENSION.get()), new StandardPaintingTeleporter(this));
                     }
-                }
-                else if (this.paintingId.equals(FixedPaintingType.PLAID.getPainting().getId()) && this.world.getDimension().getType() == PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()))
-                {
-                    player.changeDimension(DimensionType.OVERWORLD, new FixedPaintingTeleporter());
                 }
             }
         }

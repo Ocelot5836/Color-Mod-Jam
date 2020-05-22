@@ -13,7 +13,7 @@
               "ops": [
                 {
                   "source": "color",
-                  "target": "color",
+                  "target": "display.color",
                   "op": "replace"
                 }
               ]

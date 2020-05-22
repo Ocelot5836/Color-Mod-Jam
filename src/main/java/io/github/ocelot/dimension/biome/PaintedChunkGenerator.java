@@ -1,4 +1,4 @@
-package io.github.ocelot.dimension;
+package io.github.ocelot.dimension.biome;
 
 import io.github.ocelot.painting.Painting;
 import io.github.ocelot.painting.PaintingManager;

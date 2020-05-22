@@ -1,9 +1,9 @@
 package io.github.ocelot.init;
 
 import io.github.ocelot.WorldPainter;
-import io.github.ocelot.dimension.PaintedBiome;
+import io.github.ocelot.dimension.biome.PaintedBiome;
 import io.github.ocelot.dimension.PaintedDimension;
-import io.github.ocelot.dimension.PlaidBiome;
+import io.github.ocelot.dimension.biome.PlaidBiome;
 import io.github.ocelot.dimension.PlaidDimension;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;

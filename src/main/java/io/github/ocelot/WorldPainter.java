@@ -1,7 +1,7 @@
 package io.github.ocelot;
 
 import io.github.ocelot.data.CapabilityPaintingSource;
-import io.github.ocelot.entity.DeathPaintingTeleporter;
+import io.github.ocelot.dimension.teleporter.DeathPaintingTeleporter;
 import io.github.ocelot.init.*;
 import io.github.ocelot.network.SyncPaintingRealmsMessage;
 import io.github.ocelot.network.SyncPaintingsMessage;
@@ -110,7 +110,7 @@ public class WorldPainter
     public void onEvent(LivingHurtEvent event)
     {
         LivingEntity entity = event.getEntityLiving();
-        if (entity.getHealth() - event.getAmount() <= 0 && entity.dimension == PainterDimensions.getDimensionType(PainterDimensions.PAINTED_DIMENSION.get()))
+        if (entity.getHealth() - event.getAmount() <= 0 && (entity.dimension == PainterDimensions.getDimensionType(PainterDimensions.PAINTED_DIMENSION.get()) || entity.dimension == PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get())))
         {
             entity.getCapability(CapabilityPaintingSource.SOURCE_PAINTING_CAPABILITY).ifPresent(data ->
             {
