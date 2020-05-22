@@ -1,5 +1,6 @@
 package io.github.ocelot;
 
+import io.github.ocelot.client.PainterClientRegistry;
 import io.github.ocelot.data.CapabilityPaintingSource;
 import io.github.ocelot.dimension.teleporter.DeathPaintingTeleporter;
 import io.github.ocelot.init.*;
@@ -117,7 +118,7 @@ public class WorldPainter
                 if (data.getSourcePainting() != null)
                 {
                     event.setCanceled(true);
-                    entity.changeDimension(DimensionType.OVERWORLD, new DeathPaintingTeleporter(data.getSourcePainting())); // TODO warp to outside of painting with motion
+                    entity.changeDimension(DimensionType.OVERWORLD, new DeathPaintingTeleporter(data.getSourcePainting()));
                     data.setSourcePainting(null);
                     entity.fallDistance = 0;
                     entity.setFireTimer(0);

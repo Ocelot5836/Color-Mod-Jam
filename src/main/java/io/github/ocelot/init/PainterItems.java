@@ -1,7 +1,7 @@
 package io.github.ocelot.init;
 
 import io.github.ocelot.WorldPainter;
-import io.github.ocelot.entity.render.WorldPainterTileEntityItemRenderer;
+import io.github.ocelot.client.render.WorldPainterTileEntityItemRenderer;
 import io.github.ocelot.item.AfroItem;
 import io.github.ocelot.item.Paintbrush;
 import io.github.ocelot.item.PaintbrushItem;

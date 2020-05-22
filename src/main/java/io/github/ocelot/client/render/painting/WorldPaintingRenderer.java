@@ -1,4 +1,4 @@
-package io.github.ocelot.painting.render;
+package io.github.ocelot.client.render.painting;
 
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.matrix.MatrixStack;

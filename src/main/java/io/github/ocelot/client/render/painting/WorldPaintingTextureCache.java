@@ -1,4 +1,4 @@
-package io.github.ocelot.painting.render;
+package io.github.ocelot.client.render.painting;
 
 import com.google.common.base.Stopwatch;
 import com.mojang.blaze3d.systems.RenderSystem;

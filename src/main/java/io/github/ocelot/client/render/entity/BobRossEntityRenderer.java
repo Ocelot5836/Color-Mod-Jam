@@ -1,4 +1,4 @@
-package io.github.ocelot.entity.render;
+package io.github.ocelot.client.render.entity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.ocelot.WorldPainter;
@@ -17,10 +17,13 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * @author Ocelot
  */
+@OnlyIn(Dist.CLIENT)
 public class BobRossEntityRenderer extends MobRenderer<BobRossEntity, PlayerModel<BobRossEntity>>
 {
     private static final ResourceLocation TEXTURE = new ResourceLocation(WorldPainter.MOD_ID, "textures/entity/bob_ross.png");

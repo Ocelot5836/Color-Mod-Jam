@@ -1,7 +1,7 @@
 package io.github.ocelot.item;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import io.github.ocelot.entity.render.AfroRenderer;
+import io.github.ocelot.client.render.AfroRenderer;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;

@@ -1,18 +1,21 @@
-package io.github.ocelot.entity.render;
+package io.github.ocelot.client.render.entity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import io.github.ocelot.client.render.painting.WorldPaintingRenderer;
 import io.github.ocelot.entity.WorldPaintingEntity;
-import io.github.ocelot.painting.render.WorldPaintingRenderer;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * @author Ocelot
  */
+@OnlyIn(Dist.CLIENT)
 public class WorldPaintingEntityRenderer extends EntityRenderer<WorldPaintingEntity>
 {
     public WorldPaintingEntityRenderer(EntityRendererManager renderManager)

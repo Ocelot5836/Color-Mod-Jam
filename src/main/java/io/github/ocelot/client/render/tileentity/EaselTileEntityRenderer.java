@@ -1,17 +1,20 @@
-package io.github.ocelot.tileentity.renderer;
+package io.github.ocelot.client.render.tileentity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.ocelot.block.EaselBlock;
-import io.github.ocelot.painting.render.WorldPaintingRenderer;
+import io.github.ocelot.client.render.painting.WorldPaintingRenderer;
 import io.github.ocelot.tileentity.EaselTileEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * @author Ocelot
  */
+@OnlyIn(Dist.CLIENT)
 public class EaselTileEntityRenderer extends TileEntityRenderer<EaselTileEntity>
 {
     public EaselTileEntityRenderer(TileEntityRendererDispatcher rendererDispatcherIn)

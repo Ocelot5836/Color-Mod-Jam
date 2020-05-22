@@ -1,6 +1,6 @@
 package io.github.ocelot.painting;
 
-import io.github.ocelot.painting.render.WorldPaintingTextureCache;
+import io.github.ocelot.client.render.painting.WorldPaintingTextureCache;
 import net.minecraft.util.math.ChunkPos;
 
 import javax.annotation.Nullable;

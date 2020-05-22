@@ -1,11 +1,13 @@
-package io.github.ocelot.init;
+package io.github.ocelot.client;
 
 import io.github.ocelot.WorldPainter;
-import io.github.ocelot.entity.render.BobRossEntityRenderer;
-import io.github.ocelot.entity.render.WorldPaintingEntityRenderer;
+import io.github.ocelot.client.render.entity.BobRossEntityRenderer;
+import io.github.ocelot.client.render.entity.WorldPaintingEntityRenderer;
+import io.github.ocelot.init.PainterBlocks;
+import io.github.ocelot.init.PainterEntities;
 import io.github.ocelot.item.PaintDyeable;
 import io.github.ocelot.tileentity.PaintBucketTileEntity;
-import io.github.ocelot.tileentity.renderer.EaselTileEntityRenderer;
+import io.github.ocelot.client.render.tileentity.EaselTileEntityRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.BlockColors;

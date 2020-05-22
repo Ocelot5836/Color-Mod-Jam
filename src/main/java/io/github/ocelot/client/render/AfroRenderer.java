@@ -1,4 +1,4 @@
-package io.github.ocelot.entity.render;
+package io.github.ocelot.client.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.ocelot.init.PainterItems;
@@ -13,6 +13,8 @@ import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.Model;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * @author Ocelot
@@ -21,6 +23,7 @@ public class AfroRenderer
 {
     private static final ItemStack AFRO = new ItemStack(PainterItems.AFRO.get());
 
+    @OnlyIn(Dist.CLIENT)
     public static void render(LivingEntity livingEntity, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLight)
     {
         EntityRenderer<? super LivingEntity> renderer = Minecraft.getInstance().getRenderManager().getRenderer(livingEntity);
