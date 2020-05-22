@@ -1,15 +1,19 @@
 package io.github.ocelot;
 
+import io.github.ocelot.data.CapabilityPaintingSource;
 import io.github.ocelot.init.*;
 import io.github.ocelot.network.SyncPaintingRealmsMessage;
 import io.github.ocelot.network.SyncPaintingsMessage;
 import io.github.ocelot.painting.PaintingManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.RegisterDimensionsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -64,6 +68,7 @@ public class WorldPainter
     private void init(FMLCommonSetupEvent event)
     {
         PainterMessages.init();
+        CapabilityPaintingSource.register();
     }
 
     private void initClient(FMLClientSetupEvent event)
@@ -96,5 +101,20 @@ public class WorldPainter
             SyncPaintingsMessage.sendTo(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerEntity), PaintingManager.get(world).getAllPaintings());
             SyncPaintingRealmsMessage.sendTo(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerEntity), PaintingManager.get(world).getAllPaintingRealms());
         }
+    }
+
+    @SubscribeEvent
+    public void onEvent(LivingDeathEvent event)
+    {
+        Entity entity = event.getEntity();
+        entity.getCapability(CapabilityPaintingSource.SOURCE_PAINTING_CAPABILITY).ifPresent(data ->
+        {
+            if (data.getSourcePainting() != null)
+            {
+                event.setCanceled(true);
+                entity.changeDimension(DimensionType.OVERWORLD); // TODO warp to outside of painting with motion
+                data.setSourcePainting(null);
+            }
+        });
     }
 }

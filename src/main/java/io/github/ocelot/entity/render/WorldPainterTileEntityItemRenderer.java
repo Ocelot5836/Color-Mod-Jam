@@ -16,8 +16,6 @@ import net.minecraft.world.World;
  */
 public class WorldPainterTileEntityItemRenderer extends ItemStackTileEntityRenderer
 {
-    public static final WorldPainterTileEntityItemRenderer instance = new WorldPainterTileEntityItemRenderer();
-
     @Override
     public void render(ItemStack stack, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay)
     {

@@ -22,7 +22,7 @@ public class PainterItems
     public static final RegistryObject<PaintbrushItem> SMALL_PAINT_BRUSH = ITEMS.register("small_paintbrush", () -> new PaintbrushItem(Paintbrush.BrushSize.SMALL, new Item.Properties().maxStackSize(1).group(WorldPainter.TAB)));
     public static final RegistryObject<PaintbrushItem> MEDIUM_PAINT_BRUSH = ITEMS.register("medium_paintbrush", () -> new PaintbrushItem(Paintbrush.BrushSize.MEDIUM, new Item.Properties().maxStackSize(1).group(WorldPainter.TAB)));
     public static final RegistryObject<PaintbrushItem> LARGE_PAINT_BRUSH = ITEMS.register("large_paintbrush", () -> new PaintbrushItem(Paintbrush.BrushSize.LARGE, new Item.Properties().maxStackSize(1).group(WorldPainter.TAB)));
-    public static final RegistryObject<WorldPaintingItem> WORLD_PAINTING = ITEMS.register("world_painting", () -> new WorldPaintingItem(false, new Item.Properties().setISTER(() -> () -> WorldPainterTileEntityItemRenderer.instance).group(WorldPainter.TAB)));
-    public static final RegistryObject<WorldPaintingItem> TELEPORTATION_PAINTING = ITEMS.register("teleportation_painting", () -> new WorldPaintingItem(true, new Item.Properties().setISTER(() -> () -> WorldPainterTileEntityItemRenderer.instance).group(WorldPainter.TAB)));
+    public static final RegistryObject<WorldPaintingItem> WORLD_PAINTING = ITEMS.register("world_painting", () -> new WorldPaintingItem(false, new Item.Properties().setISTER(() -> WorldPainterTileEntityItemRenderer::new).group(WorldPainter.TAB)));
+    public static final RegistryObject<WorldPaintingItem> TELEPORTATION_PAINTING = ITEMS.register("teleportation_painting", () -> new WorldPaintingItem(true, new Item.Properties().setISTER(() -> WorldPainterTileEntityItemRenderer::new).group(WorldPainter.TAB)));
     public static final RegistryObject<AfroItem> AFRO = ITEMS.register("afro", () -> new AfroItem(new Item.Properties().maxStackSize(1).group(WorldPainter.TAB)));
 }
