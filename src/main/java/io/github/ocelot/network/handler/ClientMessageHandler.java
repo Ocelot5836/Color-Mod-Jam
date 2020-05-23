@@ -29,7 +29,7 @@ public class ClientMessageHandler implements MessageHandler
         {
             if (world == null)
                 return;
-            WorldPaintingEntity paintingentity = new WorldPaintingEntity(world, msg.getPosition(), msg.getFacing(), msg.getPaintingId());
+            WorldPaintingEntity paintingentity = new WorldPaintingEntity(world, msg.getPosition(), msg.getFacing(), msg.isTeleportation(), msg.getPaintingId());
             paintingentity.setEntityId(msg.getEntityID());
             paintingentity.setUniqueId(msg.getUniqueId());
             world.addEntity(msg.getEntityID(), paintingentity);
@@ -77,5 +77,11 @@ public class ClientMessageHandler implements MessageHandler
     {
         ctx.get().enqueueWork(() -> ClientPaintingManager.INSTANCE.receiveAddPaintingRealm(msg.getPaintingId(), msg.getRealmId()));
         ctx.get().setPacketHandled(true);
+    }
+
+    @Override
+    public void handleSelectBobRossTradeMessage(SelectBobRossTradeMessage msg, Supplier<NetworkEvent.Context> ctx)
+    {
+        throw new UnsupportedOperationException("Client cannot handle bob ross trades.");
     }
 }

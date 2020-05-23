@@ -9,10 +9,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  */
 public class AddPaintingRealmMessage
 {
-    private final Integer paintingId;
+    private final int paintingId;
     private final int realmId;
 
-    public AddPaintingRealmMessage(Integer paintingId, int realmId)
+    public AddPaintingRealmMessage(int paintingId, int realmId)
     {
         this.paintingId = paintingId;
         this.realmId = realmId;
@@ -30,7 +30,7 @@ public class AddPaintingRealmMessage
     }
 
     @OnlyIn(Dist.CLIENT)
-    public Integer getPaintingId()
+    public int getPaintingId()
     {
         return paintingId;
     }

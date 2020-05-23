@@ -19,20 +19,22 @@ public class SpawnWorldPaintingMessage
     private final UUID uniqueId;
     private final BlockPos position;
     private final Direction facing;
+    private final boolean teleportation;
     private final UUID paintingId;
 
-    private SpawnWorldPaintingMessage(int entityID, UUID uniqueId, BlockPos position, Direction facing, UUID paintingId)
+    private SpawnWorldPaintingMessage(int entityID, UUID uniqueId, BlockPos position, Direction facing, boolean teleportation, UUID paintingId)
     {
         this.entityID = entityID;
         this.uniqueId = uniqueId;
         this.position = position;
         this.facing = facing;
+        this.teleportation = teleportation;
         this.paintingId = paintingId;
     }
 
     public SpawnWorldPaintingMessage(WorldPaintingEntity entity)
     {
-        this(entity.getEntityId(), entity.getUniqueID(), entity.getHangingPosition(), entity.getHorizontalFacing(), entity.getPaintingId());
+        this(entity.getEntityId(), entity.getUniqueID(), entity.getHangingPosition(), entity.getHorizontalFacing(), entity.isTeleportation(), entity.getPaintingId());
     }
 
     public static void encode(SpawnWorldPaintingMessage msg, PacketBuffer buf)
@@ -41,6 +43,7 @@ public class SpawnWorldPaintingMessage
         buf.writeUniqueId(msg.uniqueId);
         buf.writeBlockPos(msg.position);
         buf.writeByte(msg.facing.getHorizontalIndex());
+        buf.writeBoolean(msg.teleportation);
         buf.writeBoolean(msg.paintingId != null);
         if (msg.paintingId != null)
             buf.writeUniqueId(msg.paintingId);
@@ -48,7 +51,7 @@ public class SpawnWorldPaintingMessage
 
     public static SpawnWorldPaintingMessage decode(PacketBuffer buf)
     {
-        return new SpawnWorldPaintingMessage(buf.readVarInt(), buf.readUniqueId(), buf.readBlockPos(), Direction.byHorizontalIndex(buf.readUnsignedByte()), buf.readBoolean() ? buf.readUniqueId() : null);
+        return new SpawnWorldPaintingMessage(buf.readVarInt(), buf.readUniqueId(), buf.readBlockPos(), Direction.byHorizontalIndex(buf.readUnsignedByte()), buf.readBoolean(), buf.readBoolean() ? buf.readUniqueId() : null);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -73,6 +76,12 @@ public class SpawnWorldPaintingMessage
     public Direction getFacing()
     {
         return facing;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public boolean isTeleportation()
+    {
+        return teleportation;
     }
 
     @Nullable

@@ -155,7 +155,7 @@ public class EaselBlock extends BaseBlock implements IWaterLoggable
                 }
                 return ActionResultType.SUCCESS;
             }
-            else if (stack.getItem() == PainterItems.WORLD_PAINTING.get() && !PainterItems.WORLD_PAINTING.get().getTeleportation(stack))
+            else if (stack.getItem() == PainterItems.WORLD_PAINTING.get())
             {
                 if (!world.isRemote())
                 {

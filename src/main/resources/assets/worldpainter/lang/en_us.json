@@ -15,6 +15,9 @@
 	"item.worldpainter.world_painting.author": "Author: %s",
 	"item.worldpainter.world_painting.unknown_author": "Unknown Author",
 	"item.worldpainter.teleportation_painting": "Teleportation Painting",
+	"item.worldpainter.teleportation_painting.id": "ID: %s",
+	"item.worldpainter.teleportation_painting.author": "Author: %s",
+	"item.worldpainter.teleportation_painting.unknown_author": "Unknown Author",
 	"item.worldpainter.fixed_painting.plaid": "Plaid Painting",
 	"item.worldpainter.afro": "Bob Ross's Afro",
 	"item.worldpainter.bob_ross_spawn_egg": "Spawn Bob Ross",
@@ -30,5 +33,11 @@
 
 	"stat.worldpainter.paint": "Easels Painted",
 	"stat.worldpainter.clean_paint_brush": "Paint Brushes Cleaned",
-	"stat.worldpainter.clean_paint_bucket": "Paint Buckets Cleaned"
+	"stat.worldpainter.clean_paint_bucket": "Paint Buckets Cleaned",
+
+	"biome.worldpainter.plaid": "The Plaidlands",
+	"biome.worldpainter.painted": "Painted",
+
+	"entity.worldpainter.world_painting": "World Painting",
+	"entity.worldpainter.bob_ross": "Bob Ross"
 }

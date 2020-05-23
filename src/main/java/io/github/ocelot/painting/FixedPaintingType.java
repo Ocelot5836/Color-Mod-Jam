@@ -1,6 +1,9 @@
 package io.github.ocelot.painting;
 
 import io.github.ocelot.WorldPainter;
+import io.github.ocelot.init.PainterItems;
+import io.github.ocelot.item.WorldPaintingItem;
+import net.minecraft.item.ItemStack;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -21,6 +24,17 @@ public enum FixedPaintingType
     {
         this.painting = new Painting(pixels, "Ocelot5836", id, true);
         this.teleportation = teleportation;
+    }
+
+    /**
+     * @return An item stack representation of this painting
+     */
+    public ItemStack getStack()
+    {
+        WorldPaintingItem item = this.teleportation ? PainterItems.TELEPORTATION_PAINTING.get() : PainterItems.WORLD_PAINTING.get();
+        ItemStack stack = new ItemStack(item);
+        item.setPainting(stack, this.painting.getId());
+        return stack.copy();
     }
 
     /**

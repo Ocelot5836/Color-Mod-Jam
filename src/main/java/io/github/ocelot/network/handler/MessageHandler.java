@@ -23,4 +23,6 @@ public interface MessageHandler
     void handleSyncPaintingRealmsMessage(SyncPaintingRealmsMessage msg, Supplier<NetworkEvent.Context> ctx);
 
     void handleAddPaintingRealmMessage(AddPaintingRealmMessage msg, Supplier<NetworkEvent.Context> ctx);
+
+    void handleSelectBobRossTradeMessage(SelectBobRossTradeMessage msg, Supplier<NetworkEvent.Context> ctx);
 }

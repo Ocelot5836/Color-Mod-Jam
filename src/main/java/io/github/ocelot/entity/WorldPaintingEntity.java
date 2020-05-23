@@ -45,25 +45,38 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
         super(entityType, world);
     }
 
-    public WorldPaintingEntity(World world, BlockPos pos, Direction facing)
+    public WorldPaintingEntity(World world, BlockPos pos, Direction facing, boolean teleportation)
     {
         super(PainterEntities.WORLD_PAINTING.get(), world, pos);
+        this.teleportation = teleportation;
         this.updateFacingWithBoundingBox(facing);
     }
 
     @OnlyIn(Dist.CLIENT)
-    public WorldPaintingEntity(World world, BlockPos pos, Direction facing, @Nullable UUID paintingId)
+    public WorldPaintingEntity(World world, BlockPos pos, Direction facing, boolean teleportation, @Nullable UUID paintingId)
     {
-        this(world, pos, facing);
+        this(world, pos, facing, teleportation);
         this.paintingId = paintingId;
         this.updateFacingWithBoundingBox(facing);
     }
 
     private ItemStack getStack()
     {
-        ItemStack stack = new ItemStack(PainterItems.WORLD_PAINTING.get());
-        if (this.paintingId != null)
-            PainterItems.WORLD_PAINTING.get().setPainting(stack, this.paintingId);
+        if (FixedPaintingType.isFixed(this.paintingId))
+            return FixedPaintingType.getType(this.paintingId).getStack();
+        ItemStack stack;
+        if (this.teleportation)
+        {
+            stack = new ItemStack(PainterItems.TELEPORTATION_PAINTING.get());
+            if (this.paintingId != null)
+                PainterItems.TELEPORTATION_PAINTING.get().setPainting(stack, this.paintingId);
+        }
+        else
+        {
+            stack = new ItemStack(PainterItems.WORLD_PAINTING.get());
+            if (this.paintingId != null)
+                PainterItems.WORLD_PAINTING.get().setPainting(stack, this.paintingId);
+        }
         return stack;
     }
 

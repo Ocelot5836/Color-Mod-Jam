@@ -21,7 +21,6 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -89,7 +88,6 @@ public class WorldPaintingItem extends HangingEntityItem
                 {
                     ItemStack stack = new ItemStack(this);
                     this.setPainting(stack, type.getPainting().getId());
-                    this.setTeleportation(stack, this.teleportation);
                     items.add(stack);
                 }
             }
@@ -110,20 +108,20 @@ public class WorldPaintingItem extends HangingEntityItem
         else
         {
             World world = context.getWorld();
-            WorldPaintingEntity hangingentity = new WorldPaintingEntity(world, blockpos1, direction);
+            WorldPaintingEntity paintingEntity = new WorldPaintingEntity(world, blockpos1, direction, this.teleportation);
 
             CompoundNBT compoundnbt = itemstack.getTag();
             if (compoundnbt != null)
             {
-                EntityType.applyItemNBT(world, playerentity, hangingentity, compoundnbt);
+                EntityType.applyItemNBT(world, playerentity, paintingEntity, compoundnbt);
             }
 
-            if (hangingentity.onValidSurface())
+            if (paintingEntity.onValidSurface())
             {
                 if (!world.isRemote())
                 {
-                    hangingentity.playPlaceSound();
-                    world.addEntity(hangingentity);
+                    paintingEntity.playPlaceSound();
+                    world.addEntity(paintingEntity);
                 }
 
                 itemstack.shrink(1);
@@ -134,6 +132,11 @@ public class WorldPaintingItem extends HangingEntityItem
                 return ActionResultType.CONSUME;
             }
         }
+    }
+
+    public boolean isTeleportation()
+    {
+        return teleportation;
     }
 
     public boolean hasPainting(ItemStack stack)
@@ -152,22 +155,5 @@ public class WorldPaintingItem extends HangingEntityItem
     {
         CompoundNBT compoundnbt = stack.getChildTag("EntityTag");
         return compoundnbt != null && compoundnbt.hasUniqueId("paintingId") ? compoundnbt.getUniqueId("paintingId") : null;
-    }
-
-    public boolean hasTeleportation(ItemStack stack)
-    {
-        CompoundNBT compoundnbt = stack.getChildTag("EntityTag");
-        return compoundnbt != null && compoundnbt.contains("teleportation", Constants.NBT.TAG_BYTE);
-    }
-
-    public void setTeleportation(ItemStack stack, boolean teleportation)
-    {
-        stack.getOrCreateChildTag("EntityTag").putBoolean("teleportation", teleportation);
-    }
-
-    public boolean getTeleportation(ItemStack stack)
-    {
-        CompoundNBT compoundnbt = stack.getChildTag("EntityTag");
-        return compoundnbt != null && compoundnbt.hasUniqueId("teleportation") && compoundnbt.getBoolean("teleportation");
     }
 }
