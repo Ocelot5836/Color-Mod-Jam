@@ -16,16 +16,17 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.RegisterDimensionsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -58,7 +59,7 @@ public class WorldPainter
     {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::initClient);
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> bus.addListener(PainterClientRegistry::setup));
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         PainterBlocks.BLOCKS.register(bus);
         PainterBlocks.TILE_ENTTIES.register(bus);
@@ -74,11 +75,6 @@ public class WorldPainter
     {
         PainterMessages.init();
         CapabilityPaintingSource.register();
-    }
-
-    private void initClient(FMLClientSetupEvent event)
-    {
-        PainterClientRegistry.init(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
     private void enqueueIMC(InterModEnqueueEvent event)

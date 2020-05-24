@@ -3,12 +3,12 @@ package io.github.ocelot.client;
 import io.github.ocelot.WorldPainter;
 import io.github.ocelot.client.render.entity.BobRossEntityRenderer;
 import io.github.ocelot.client.render.entity.WorldPaintingEntityRenderer;
+import io.github.ocelot.client.render.tileentity.EaselTileEntityRenderer;
 import io.github.ocelot.init.PainterBlocks;
 import io.github.ocelot.init.PainterEntities;
 import io.github.ocelot.init.PainterScreens;
 import io.github.ocelot.item.PaintDyeable;
 import io.github.ocelot.tileentity.PaintBucketTileEntity;
-import io.github.ocelot.client.render.tileentity.EaselTileEntityRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.BlockColors;
@@ -18,11 +18,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +41,7 @@ public class PainterClientRegistry
     private static final Logger LOGGER = LogManager.getLogger();
 
     @OnlyIn(Dist.CLIENT)
-    public static void init(IEventBus bus)
+    public static void setup(FMLClientSetupEvent event)
     {
         PainterScreens.init();
 
