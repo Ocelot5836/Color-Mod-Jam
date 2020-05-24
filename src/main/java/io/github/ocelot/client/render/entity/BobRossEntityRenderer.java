@@ -35,6 +35,7 @@ public class BobRossEntityRenderer extends MobRenderer<BobRossEntity, PlayerMode
         this.addLayer(new HeldItemLayer<>(this));
         this.addLayer(new ArrowLayer<>(this));
         this.addLayer(new HeadLayer<>(this));
+        this.addLayer(new BobRossAfroLayer(this));
         this.addLayer(new ElytraLayer<>(this));
         this.addLayer(new SpinAttackEffectLayer<>(this));
         this.addLayer(new BeeStingerLayer<>(this));

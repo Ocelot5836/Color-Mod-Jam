@@ -123,12 +123,17 @@ public class WorldPainter
                     data.setSourcePainting(null);
                     entity.fallDistance = 0;
                     entity.setFireTimer(0);
-                    entity.setHealth(1);
                     entity.clearActivePotions();
-                    if (!(entity instanceof PlayerEntity) || !((PlayerEntity) entity).isCreative())
+                    boolean creative = entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative();
+                    if (!creative)
                     {
+                        entity.setHealth(1);
                         entity.addPotionEffect(new EffectInstance(Effects.REGENERATION, 900, 1));
                         entity.addPotionEffect(new EffectInstance(Effects.ABSORPTION, 100, 1));
+                    }
+                    else
+                    {
+                        entity.setHealth(entity.getMaxHealth());
                     }
                 }
             });
