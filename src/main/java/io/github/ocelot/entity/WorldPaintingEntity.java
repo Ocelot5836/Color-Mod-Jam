@@ -30,6 +30,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkDirection;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -152,28 +153,53 @@ public class WorldPaintingEntity extends HangingEntity implements PaintingHolder
         }
     }
 
-    @Override
-    public void onCollideWithPlayer(PlayerEntity player)
+    private void warp(Entity entity)
     {
         if (!this.world.isRemote())
         {
-            if (!this.getBoundingBox().intersects(player.getBoundingBox()))
+            if (!this.getBoundingBox().intersects(entity.getBoundingBox()))
                 return;
+
             if (this.teleportation && this.paintingId != null && PaintingManager.get(this.world).hasPainting(this.paintingId))
             {
                 if (this.world.getDimension().getType() == DimensionType.OVERWORLD)
                 {
                     if (this.paintingId.equals(FixedPaintingType.PLAID.getPainting().getId()))
                     {
-                        player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()), new FixedPaintingTeleporter(this));
+                        entity.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PLAID_DIMENSION.get()), new FixedPaintingTeleporter(this));
                     }
                     else if (PaintingManager.get(this.world).initializeRealm(this.paintingId))
                     {
-                        player.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PAINTED_DIMENSION.get()), new StandardPaintingTeleporter(this));
+                        entity.changeDimension(PainterDimensions.getDimensionType(PainterDimensions.PAINTED_DIMENSION.get()), new StandardPaintingTeleporter(this));
                     }
                 }
             }
         }
+        return;
+    }
+
+    @Override
+    public void tick()
+    {
+        super.tick();
+        if (!this.isAlive())
+            return;
+
+        List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getBoundingBox());
+
+        for (Entity entity : list)
+        {
+            if (!(entity instanceof PlayerEntity) && entity.isAlive() && !entity.isSpectator())
+            {
+                this.warp(entity);
+            }
+        }
+    }
+
+    @Override
+    public void onCollideWithPlayer(PlayerEntity entity)
+    {
+        this.warp(entity);
     }
 
     @Override

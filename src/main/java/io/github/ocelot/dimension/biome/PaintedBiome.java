@@ -1,12 +1,6 @@
 package io.github.ocelot.dimension.biome;
 
-import net.minecraft.util.SharedSeedRandom;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.GenerationSettings;
-import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 
 /**
@@ -28,21 +22,4 @@ public class PaintedBiome extends Biome
                 .waterFogColor(329011)
                 .parent(null));
     }
-
-    @Override
-    public void decorate(GenerationStage.Decoration stage, ChunkGenerator<? extends GenerationSettings> chunkGenerator, IWorld worldIn, long seed, SharedSeedRandom random, BlockPos pos)
-    {
-    }
-
-    @Override
-    public int getGrassColor(double posX, double posZ)
-    {
-        return (((int) Math.abs(posX * 128)) & 0xff) << 16 | ((int) Math.abs(posZ * 128)) & 0xff;
-    }
-
-//    @Override
-//    public int getFoliageColor(double posX, double posZ)
-//    {
-//        return this.getGrassColor(posX, posZ);
-//    }
 }

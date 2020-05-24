@@ -132,7 +132,7 @@ public class BobRossEntity extends AbstractVillagerEntity implements IShearable
         {
             return true;
         }
-        else if (this.isAlive() && !this.hasCustomer() && !this.isChild() && !this.isSheared())
+        else if (this.isAlive() && !this.hasCustomer() && !this.isChild() && this.hasHair())
         {
             if (hand == Hand.MAIN_HAND)
             {
@@ -169,7 +169,7 @@ public class BobRossEntity extends AbstractVillagerEntity implements IShearable
     @Override
     public boolean isShearable(@Nonnull ItemStack item, IWorldReader world, BlockPos pos)
     {
-        return !this.isSheared();
+        return this.hasHair();
     }
 
     @Nonnull
@@ -185,9 +185,9 @@ public class BobRossEntity extends AbstractVillagerEntity implements IShearable
         return IShearable.super.onSheared(item, world, pos, fortune);
     }
 
-    public boolean isSheared()
+    public boolean hasHair()
     {
-        return this.getDataManager().get(SHEARED);
+        return !this.getDataManager().get(SHEARED);
     }
 
     @Override

@@ -22,7 +22,7 @@ public class BobRossAfroLayer extends LayerRenderer<BobRossEntity, PlayerModel<B
 
     public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLight, BobRossEntity bobRoss, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch)
     {
-        if (!bobRoss.isSheared())
+        if (bobRoss.hasHair())
         {
             AfroRenderer.render(bobRoss, matrixStack, buffer, packedLight);
         }
