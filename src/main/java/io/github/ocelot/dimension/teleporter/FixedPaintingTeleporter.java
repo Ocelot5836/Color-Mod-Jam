@@ -4,7 +4,9 @@ import io.github.ocelot.data.CapabilityPaintingSource;
 import io.github.ocelot.entity.WorldPaintingEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.server.TicketType;
 import net.minecraftforge.common.util.ITeleporter;
 
 import java.util.function.Function;
@@ -30,6 +32,8 @@ public class FixedPaintingTeleporter implements ITeleporter
         {
             if (!destWorld.isAirBlock(spawnPos.setPos(0, 255 - y, 0)))
             {
+                spawnPos.setPos(0, 255 - y + 1, 0);
+                destWorld.getChunkProvider().registerTicket(TicketType.PORTAL, new ChunkPos(spawnPos), 3, spawnPos);
                 entity.setLocationAndAngles(0.5, 255 - y + 1, 0.5, yaw, entity.rotationPitch);
                 break;
             }

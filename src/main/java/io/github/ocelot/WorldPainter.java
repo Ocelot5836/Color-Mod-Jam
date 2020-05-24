@@ -119,8 +119,6 @@ public class WorldPainter
                 if (data.getSourcePainting() != null)
                 {
                     event.setCanceled(true);
-                    entity.changeDimension(DimensionType.OVERWORLD, new DeathPaintingTeleporter(data.getSourcePainting()));
-                    data.setSourcePainting(null);
                     entity.fallDistance = 0;
                     entity.setFireTimer(0);
                     entity.clearActivePotions();
@@ -135,6 +133,8 @@ public class WorldPainter
                     {
                         entity.setHealth(entity.getMaxHealth());
                     }
+                    entity.changeDimension(DimensionType.OVERWORLD, new DeathPaintingTeleporter(data.getSourcePainting()));
+                    data.setSourcePainting(null);
                 }
             });
         }
