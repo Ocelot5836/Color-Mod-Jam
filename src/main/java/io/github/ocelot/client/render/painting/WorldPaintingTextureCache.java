@@ -85,7 +85,7 @@ public class WorldPaintingTextureCache
     {
         if (CACHE.containsKey(key))
         {
-            LOGGER.debug("Deleting painting '" + key + "'");
+            LOGGER.trace("Deleting painting '" + key + "'");
             Minecraft.getInstance().getTextureManager().deleteTexture(CACHE.remove(key).getLeft());
         }
     }
@@ -136,7 +136,7 @@ public class WorldPaintingTextureCache
         {
             Stopwatch stopwatch = Stopwatch.createStarted();
             fillTexture(painting);
-            LOGGER.debug("Generated texture for painting '{} took {}", painting.getId(), stopwatch);
+            LOGGER.trace("Generated texture for painting '{} took {}", painting.getId(), stopwatch);
         }
         return CACHE.get(id).getLeft();
     }
