@@ -7,6 +7,8 @@ import io.github.ocelot.init.PainterItems;
 import io.github.ocelot.item.PaintBucketItem;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.merchant.villager.AbstractVillagerEntity;
 import net.minecraft.entity.merchant.villager.VillagerTrades;
 import net.minecraft.entity.player.PlayerEntity;
@@ -53,6 +55,19 @@ public class BobRossEntity extends AbstractVillagerEntity implements IShearable
     private void speak(PlayerEntity player)
     {
         // TODO say lines to the specific player
+    }
+
+    @Override
+    protected void registerGoals()
+    {
+        this.goalSelector.addGoal(0, new SwimGoal(this));
+        this.goalSelector.addGoal(1, new TradeWithPlayerGoal(this));
+        this.goalSelector.addGoal(1, new HurtByTargetGoal(this));
+        this.goalSelector.addGoal(1, new LookAtCustomerGoal(this));
+        this.goalSelector.addGoal(4, new MoveTowardsRestrictionGoal(this, 0.35D));
+        this.goalSelector.addGoal(8, new WaterAvoidingRandomWalkingGoal(this, 0.35D));
+        this.goalSelector.addGoal(9, new LookAtWithoutMovingGoal(this, PlayerEntity.class, 3.0F, 1.0F));
+        this.goalSelector.addGoal(10, new LookAtGoal(this, MobEntity.class, 8.0F));
     }
 
     @Override
