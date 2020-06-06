@@ -62,7 +62,6 @@ public class BobRossEntity extends AbstractVillagerEntity implements IShearable
     {
         this.goalSelector.addGoal(0, new SwimGoal(this));
         this.goalSelector.addGoal(1, new TradeWithPlayerGoal(this));
-        this.goalSelector.addGoal(1, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(1, new LookAtCustomerGoal(this));
         this.goalSelector.addGoal(4, new MoveTowardsRestrictionGoal(this, 0.35D));
         this.goalSelector.addGoal(8, new WaterAvoidingRandomWalkingGoal(this, 0.35D));
