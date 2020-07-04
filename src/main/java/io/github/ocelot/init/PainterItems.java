@@ -17,7 +17,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 @SuppressWarnings("unused")
 public class PainterItems
 {
-    public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, WorldPainter.MOD_ID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, WorldPainter.MOD_ID);
 
     public static final RegistryObject<PaintbrushItem> SMALL_PAINT_BRUSH = ITEMS.register("small_paintbrush", () -> new PaintbrushItem(Paintbrush.BrushSize.SMALL, new Item.Properties().maxStackSize(1).group(WorldPainter.TAB)));
     public static final RegistryObject<PaintbrushItem> MEDIUM_PAINT_BRUSH = ITEMS.register("medium_paintbrush", () -> new PaintbrushItem(Paintbrush.BrushSize.MEDIUM, new Item.Properties().maxStackSize(1).group(WorldPainter.TAB)));

@@ -1,10 +1,8 @@
 package io.github.ocelot.client.render.painting;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import io.github.ocelot.WorldPainter;
-import io.github.ocelot.client.ShapeRenderer;
 import io.github.ocelot.client.framebuffer.AdvancedFbo;
 import io.github.ocelot.painting.Painting;
 import net.minecraft.client.Minecraft;
@@ -13,19 +11,23 @@ import net.minecraft.client.renderer.Matrix3f;
 import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.Texture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.client.shader.ShaderGroup;
+import net.minecraft.resources.IReloadableResourceManager;
+import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.LazyValue;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.IEventBus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-
-import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * <p>Manages the rendering of {@link Painting} onto a painting frame.</p>
@@ -39,17 +41,49 @@ public class WorldPaintingRenderer
     private static final ResourceLocation SHADER_LOCATION = new ResourceLocation("shaders/post/wobble.json");
     private static final ResourceLocation FBO_LOCATION = new ResourceLocation(WorldPainter.MOD_ID, "textures/entity/painting_fbo.png");
 
-    private static final LazyValue<AdvancedFbo> FRAMEBUFFER = new LazyValue<>(WorldPaintingRenderer::createFbo);
+    private static final LazyValue<AdvancedFbo> IN_FRAMEBUFFER = new LazyValue<>(WorldPaintingRenderer::createInputFbo);
+    private static Framebuffer outFbo;
+    private static ShaderGroup shader;
 
-    private static AdvancedFbo createFbo()
+    public static void init(IEventBus bus)
+    {
+        bus.addListener(EventPriority.NORMAL, false, ColorHandlerEvent.Block.class, event ->
+        {
+            Minecraft minecraft = Minecraft.getInstance();
+            IResourceManager resourceManager = minecraft.getResourceManager();
+            if (resourceManager instanceof IReloadableResourceManager)
+            {
+                ((IReloadableResourceManager) resourceManager).addReloadListener((stage, iResourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> CompletableFuture.allOf().thenCompose(stage::markCompleteAwaitingOthers).thenRunAsync(() -> CompletableFuture.runAsync(() -> loadShader(iResourceManager), gameExecutor)));
+            }
+        });
+    }
+
+    private static void loadShader(IResourceManager resourceManager)
+    {
+        if (shader != null)
+            shader.close();
+        try
+        {
+            shader = new ShaderGroup(Minecraft.getInstance().getTextureManager(), resourceManager, IN_FRAMEBUFFER.getValue().getVanillaWrapper(), SHADER_LOCATION);
+            shader.createBindFramebuffers(IN_FRAMEBUFFER.getValue().getWidth(), IN_FRAMEBUFFER.getValue().getHeight());
+            outFbo = shader.getFramebufferRaw("final");
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("Failed to load painting shader from '" + SHADER_LOCATION + "'.", e);
+            shader = null;
+            outFbo = null;
+        }
+    }
+
+    private static AdvancedFbo createInputFbo()
     {
         AdvancedFbo fbo = new AdvancedFbo.Builder(16, 16).addColorTextureBuffer().build();
         fbo.create();
-        Minecraft.getInstance().getTextureManager().loadTexture(FBO_LOCATION, (Texture) fbo.getColorTextureAttachment(0));
         return fbo;
     }
 
-    private static void renderBackground(MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, boolean renderBorder, boolean renderEffects, TextureAtlasSprite backSprite, int combinedLight)
+    private static void renderBackground(MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, boolean renderBorder, boolean renderEffects, TextureAtlasSprite backSprite, int combinedLight, float partialTicks)
     {
         MatrixStack.Entry last = stack.getLast();
         Matrix4f matrix4f = last.getMatrix();
@@ -105,44 +139,85 @@ public class WorldPaintingRenderer
                 pos(matrix4f, matrix3f, builder, f16, f17, f11, f13, 0.5F, 1, 0, 0, combinedLight);
                 Minecraft.getInstance().getRenderTypeBuffers().getBufferSource().finish(RenderType.getEntitySolid(backSprite.getAtlasTexture().getTextureLocation()));
 
-                if (!renderEffects)
+                boolean useShader = shader == null || outFbo == null || !renderEffects;
+                if (useShader)
                 {
-                    IVertexBuilder frontBuilder = buffer.getBuffer(RenderType.getEntitySolid(WorldPaintingTextureCache.getTexture(painting)));
-                    renderFront(matrix4f, matrix3f, frontBuilder, f15, f16, f17, f18, i, j, d0, d1, k, l, combinedLight);
-                    Minecraft.getInstance().getRenderTypeBuffers().getBufferSource().finish(RenderType.getEntitySolid(WorldPaintingTextureCache.getTexture(painting)));
-                }
-                else
-                {
-                    AdvancedFbo fbo = FRAMEBUFFER.getValue();
-                    fbo.bind(true);
+                    AdvancedFbo inFbo = IN_FRAMEBUFFER.getValue();
+                    inFbo.bind(false);
                     {
-                        fbo.clear();
-
-                        RenderSystem.matrixMode(GL_PROJECTION);
-                        RenderSystem.pushMatrix();
-                        RenderSystem.loadIdentity();
-                        RenderSystem.ortho(0, 1, 0, 1, 0.3, 1000.0);
-                        RenderSystem.matrixMode(GL_MODELVIEW);
-                        RenderSystem.pushMatrix();
-                        RenderSystem.loadIdentity();
-                        RenderSystem.translatef(0, 0, -10);
-
-                        Minecraft.getInstance().getTextureManager().bindTexture(WorldPaintingTextureCache.getTexture(painting));
-                        ShapeRenderer.drawRectWithTexture(0, 0, k, l, 1, 1, -1, -1, i, j);
-
-                        RenderSystem.matrixMode(GL_PROJECTION);
-                        RenderSystem.popMatrix();
-                        RenderSystem.matrixMode(GL_MODELVIEW);
-                        RenderSystem.popMatrix();
+                        inFbo.clear();
                     }
-                    Minecraft.getInstance().getFramebuffer().bindFramebuffer(true);
+                }
 
-                    IVertexBuilder fboBuilder = buffer.getBuffer(RenderType.getEntitySolid(FBO_LOCATION));
-                    pos(matrix4f, matrix3f, fboBuilder, f15, f18, 1, 0, -0.5F, 0, 0, -1, combinedLight);
-                    pos(matrix4f, matrix3f, fboBuilder, f16, f18, 0, 0, -0.5F, 0, 0, -1, combinedLight);
-                    pos(matrix4f, matrix3f, fboBuilder, f16, f17, 0, 1, -0.5F, 0, 0, -1, combinedLight);
-                    pos(matrix4f, matrix3f, fboBuilder, f15, f17, 1, 1, -0.5F, 0, 0, -1, combinedLight);
-                    Minecraft.getInstance().getRenderTypeBuffers().getBufferSource().finish(RenderType.getEntitySolid(FBO_LOCATION));
+                IVertexBuilder frontBuilder = buffer.getBuffer(RenderType.getEntitySolid(WorldPaintingTextureCache.getTexture(painting)));
+                renderFront(matrix4f, matrix3f, frontBuilder, f15, f16, f17, f18, i, j, d0, d1, k, l, combinedLight);
+                Minecraft.getInstance().getRenderTypeBuffers().getBufferSource().finish(RenderType.getEntitySolid(WorldPaintingTextureCache.getTexture(painting)));
+
+                if (useShader)
+                {
+                    Minecraft.getInstance().getFramebuffer().bindFramebuffer(false);
+                }
+
+//                }
+//                else
+                {
+//                    AdvancedFbo inFbo = IN_FRAMEBUFFER.getValue();
+//                    inFbo.bind(true);
+//                    {
+//                        inFbo.clear();
+//
+//                        RenderSystem.matrixMode(GL_PROJECTION);
+//                        RenderSystem.pushMatrix();
+//                        RenderSystem.loadIdentity();
+//                        RenderSystem.ortho(0, 1, 0, 1, 0.3, 1000.0);
+//                        RenderSystem.matrixMode(GL_MODELVIEW);
+//                        RenderSystem.pushMatrix();
+//                        RenderSystem.loadIdentity();
+//                        RenderSystem.translatef(0, 0, -10);
+//
+//                        Minecraft.getInstance().getTextureManager().bindTexture(WorldPaintingTextureCache.getTexture(painting));
+//                        ShapeRenderer.drawRectWithTexture(0, 0, k, l, 1, 1, -1, -1, i, j);
+//
+//                        RenderSystem.matrixMode(GL_PROJECTION);
+//                        RenderSystem.popMatrix();
+//                        RenderSystem.matrixMode(GL_MODELVIEW);
+//                        RenderSystem.popMatrix();
+//                    }
+//                    outFbo.bind(true);
+//                    {
+//                        outFbo.clear();
+//
+//                        RenderSystem.matrixMode(GL_PROJECTION);
+//                        RenderSystem.pushMatrix();
+//                        RenderSystem.loadIdentity();
+//                        RenderSystem.ortho(0, inFbo.getWidth(), inFbo.getHeight(), 0, 0.3, 1000.0);
+//                        RenderSystem.matrixMode(GL_MODELVIEW);
+//                        RenderSystem.pushMatrix();
+//                        RenderSystem.loadIdentity();
+//                        RenderSystem.translatef(0, 0, -10);
+//
+//                        shader.render(partialTicks);
+//
+//                        RenderSystem.matrixMode(GL_PROJECTION);
+//                        RenderSystem.popMatrix();
+//                        RenderSystem.matrixMode(GL_MODELVIEW);
+//                        RenderSystem.popMatrix();
+//                    }
+//
+//                    Minecraft.getInstance().getFramebuffer().bindFramebuffer(true);
+//
+//                    IVertexBuilder fboBuilder = buffer.getBuffer(RenderType.getEntitySolid(FBO_LOCATION));
+//                    pos(matrix4f, matrix3f, fboBuilder, f15, f18, 1, 0, -0.5F, 0, 0, -1, combinedLight);
+//                    pos(matrix4f, matrix3f, fboBuilder, f16, f18, 0, 0, -0.5F, 0, 0, -1, combinedLight);
+//                    pos(matrix4f, matrix3f, fboBuilder, f16, f17, 0, 1, -0.5F, 0, 0, -1, combinedLight);
+//                    pos(matrix4f, matrix3f, fboBuilder, f15, f17, 1, 1, -0.5F, 0, 0, -1, combinedLight);
+//                    Minecraft.getInstance().getRenderTypeBuffers().getBufferSource().finish(RenderType.getEntitySolid(FBO_LOCATION));
+                }
+
+                if (useShader)
+                {
+                    outFbo.framebufferClear(Minecraft.IS_RUNNING_ON_MAC);
+                    Minecraft.getInstance().getFramebuffer().bindFramebuffer(false);
                 }
 
                 if (renderBorder && (painting == null || painting.hasBorder()))
@@ -201,9 +276,10 @@ public class WorldPaintingRenderer
      * @param renderBorder  Whether or not to draw a border on the painting
      * @param renderEffects Whether or not to draw to the shader buffer
      * @param combinedLight The combined light of the painting
+     * @param partialTicks  The percentage form last tick to this tick
      */
-    public static void renderPainting(MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, boolean renderBorder, boolean renderEffects, int combinedLight)
+    public static void renderPainting(MatrixStack stack, IRenderTypeBuffer buffer, @Nullable Painting painting, boolean renderBorder, boolean renderEffects, int combinedLight, float partialTicks)
     {
-        renderBackground(stack, buffer, painting, renderBorder, renderEffects, Minecraft.getInstance().getPaintingSpriteUploader().getBackSprite(), combinedLight);
+        renderBackground(stack, buffer, painting, renderBorder, renderEffects, Minecraft.getInstance().getPaintingSpriteUploader().getBackSprite(), combinedLight, partialTicks);
     }
 }

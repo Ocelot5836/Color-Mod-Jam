@@ -26,8 +26,8 @@ import java.util.function.Supplier;
 @SuppressWarnings("unused")
 public class PainterBlocks
 {
-    public static final DeferredRegister<Block> BLOCKS = new DeferredRegister<>(ForgeRegistries.BLOCKS, WorldPainter.MOD_ID);
-    public static final DeferredRegister<TileEntityType<?>> TILE_ENTTIES = new DeferredRegister<>(ForgeRegistries.TILE_ENTITIES, WorldPainter.MOD_ID);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, WorldPainter.MOD_ID);
+    public static final DeferredRegister<TileEntityType<?>> TILE_ENTTIES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, WorldPainter.MOD_ID);
 
 //    public static final RegistryObject<LeavesBlock> PAINTED_LEAVES = register("painted_leaves", () -> new LeavesBlock(Block.Properties.from(Blocks.OAK_LEAVES)), new Item.Properties().group(WorldPainter.TAB));
     public static final RegistryObject<PaintBucketBlock> PAINT_BUCKET = register("paint_bucket", () -> new PaintBucketBlock(Block.Properties.create(Material.MISCELLANEOUS).hardnessAndResistance(1.0F)), object -> new PaintBucketItem(object.get(), new Item.Properties().group(WorldPainter.TAB)));

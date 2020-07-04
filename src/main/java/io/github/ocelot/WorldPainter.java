@@ -58,9 +58,13 @@ public class WorldPainter
     public WorldPainter()
     {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> bus.addListener(PainterClientRegistry::setup));
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+        bus.addListener(this::init);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
+        {
+            PainterClientRegistry.init(bus);
+            bus.addListener(PainterClientRegistry::setup);
+        });
+        bus.addListener(this::enqueueIMC);
         PainterBlocks.BLOCKS.register(bus);
         PainterBlocks.TILE_ENTTIES.register(bus);
         PainterItems.ITEMS.register(bus);

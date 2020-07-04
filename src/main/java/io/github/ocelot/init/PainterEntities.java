@@ -24,7 +24,7 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class PainterEntities
 {
-    public static final DeferredRegister<EntityType<?>> ENTITIES = new DeferredRegister<>(ForgeRegistries.ENTITIES, WorldPainter.MOD_ID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, WorldPainter.MOD_ID);
 
     private static final Map<ResourceLocation, RegistryObject<SpawnEggItem>> SPAWN_EGG_ITEM_MAP = new HashMap<>();
 

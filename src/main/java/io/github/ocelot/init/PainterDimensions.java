@@ -20,8 +20,8 @@ import java.util.Objects;
  */
 public class PainterDimensions
 {
-    public static final DeferredRegister<ModDimension> DIMENSIONS = new DeferredRegister<>(ForgeRegistries.MOD_DIMENSIONS, WorldPainter.MOD_ID);
-    public static final DeferredRegister<Biome> BIOMES = new DeferredRegister<>(ForgeRegistries.BIOMES, WorldPainter.MOD_ID);
+    public static final DeferredRegister<ModDimension> DIMENSIONS = DeferredRegister.create(ForgeRegistries.MOD_DIMENSIONS, WorldPainter.MOD_ID);
+    public static final DeferredRegister<Biome> BIOMES = DeferredRegister.create(ForgeRegistries.BIOMES, WorldPainter.MOD_ID);
 
     public static final RegistryObject<ModDimension> PAINTED_DIMENSION = DIMENSIONS.register("painted", () -> ModDimension.withFactory(PaintedDimension::new));
     public static final RegistryObject<ModDimension> PLAID_DIMENSION = DIMENSIONS.register("plaid", () -> ModDimension.withFactory(PlaidDimension::new));

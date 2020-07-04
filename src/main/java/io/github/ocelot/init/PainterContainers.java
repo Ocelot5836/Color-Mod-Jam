@@ -13,7 +13,7 @@ import net.minecraftforge.registries.ForgeRegistries;
  */
 public class PainterContainers
 {
-    public static final DeferredRegister<ContainerType<?>> CONTAINERS = new DeferredRegister<>(ForgeRegistries.CONTAINERS, WorldPainter.MOD_ID);
+    public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, WorldPainter.MOD_ID);
 
     public static final RegistryObject<ContainerType<BobRossTradeContainer>> BOB_ROSS = CONTAINERS.register("bob_ross", () -> new ContainerType<>(new BobRossTradeScreenFactory()));
 }

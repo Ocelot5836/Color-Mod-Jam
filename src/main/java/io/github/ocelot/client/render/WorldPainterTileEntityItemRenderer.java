@@ -31,7 +31,7 @@ public class WorldPainterTileEntityItemRenderer extends ItemStackTileEntityRende
             matrixStack.translate(0.5, 0.5, 0);
             matrixStack.scale(0.0625F, 0.0625F, 0.0625F);
             Painting painting = PaintingManager.get(world).getPainting(((WorldPaintingItem) stack.getItem()).getPaintingId(stack));
-            WorldPaintingRenderer.renderPainting(matrixStack, buffer, painting, true, false, combinedLight);
+            WorldPaintingRenderer.renderPainting(matrixStack, buffer, painting, true, false, combinedLight, Minecraft.getInstance().getRenderPartialTicks());
             matrixStack.pop();
         }
     }

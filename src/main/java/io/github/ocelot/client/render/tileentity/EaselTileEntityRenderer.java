@@ -36,7 +36,7 @@ public class EaselTileEntityRenderer extends TileEntityRenderer<EaselTileEntity>
             stack.translate(0, 24.25, 3.125);
             stack.rotate(Vector3f.XP.rotationDegrees(22.5f));
             stack.scale(0.5f, 0.5f, 0.5f);
-            WorldPaintingRenderer.renderPainting(stack, buffer, te.getPainting(), Minecraft.getInstance().player == null || !(Minecraft.getInstance().player.getHeldItemMainhand().getItem() instanceof PaintbrushItem), false, combinedLight);
+            WorldPaintingRenderer.renderPainting(stack, buffer, te.getPainting(), Minecraft.getInstance().player == null || !(Minecraft.getInstance().player.getHeldItemMainhand().getItem() instanceof PaintbrushItem), false, combinedLight, partialTicks);
             stack.pop();
         }
     }
