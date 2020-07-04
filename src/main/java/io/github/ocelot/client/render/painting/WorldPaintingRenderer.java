@@ -128,7 +128,7 @@ public class WorldPaintingRenderer
                         RenderSystem.translatef(0, 0, -10);
 
                         Minecraft.getInstance().getTextureManager().bindTexture(WorldPaintingTextureCache.getTexture(painting));
-                        ShapeRenderer.drawRectWithTexture(0, 0, k, l, 1, 1, -1,-1,i,j);
+                        ShapeRenderer.drawRectWithTexture(0, 0, k, l, 1, 1, -1, -1, i, j);
 
                         RenderSystem.matrixMode(GL_PROJECTION);
                         RenderSystem.popMatrix();
