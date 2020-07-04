@@ -3,7 +3,9 @@ package io.github.ocelot.client.render.tileentity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.ocelot.block.EaselBlock;
 import io.github.ocelot.client.render.painting.WorldPaintingRenderer;
+import io.github.ocelot.item.PaintbrushItem;
 import io.github.ocelot.tileentity.EaselTileEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
@@ -34,7 +36,7 @@ public class EaselTileEntityRenderer extends TileEntityRenderer<EaselTileEntity>
             stack.translate(0, 24.25, 3.125);
             stack.rotate(Vector3f.XP.rotationDegrees(22.5f));
             stack.scale(0.5f, 0.5f, 0.5f);
-            WorldPaintingRenderer.renderPainting(stack, buffer, te.getPainting(), false, false, combinedLight);
+            WorldPaintingRenderer.renderPainting(stack, buffer, te.getPainting(), Minecraft.getInstance().player == null || !(Minecraft.getInstance().player.getHeldItemMainhand().getItem() instanceof PaintbrushItem), false, combinedLight);
             stack.pop();
         }
     }
