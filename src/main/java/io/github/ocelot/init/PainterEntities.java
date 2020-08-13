@@ -46,6 +46,6 @@ public class PainterEntities
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String id, EntityType.Builder<T> builder)
     {
-        return ENTITIES.register(id, () -> builder.build(id));
+        return ENTITIES.register(id, () -> builder.build(WorldPainter.MOD_ID + ":" + id));
     }
 }
